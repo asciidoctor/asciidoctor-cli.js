@@ -1,0 +1,9 @@
+= Asciidoctor.js CLI
+
+The Asciidoctor.js command line interface.
+
+Install this globally and you'll have access to the `asciidoctorjs` command anywhere on your system.
+
+  npm install -g asciidoctor-cli
+
+Type `asciidoctorjs --help` for more information.

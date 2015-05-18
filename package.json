@@ -1,0 +1,46 @@
+{
+  "name": "asciidoctor-cli",
+  "version": "1.5.2",
+  "description": "A JavaScript AsciiDoc processor, cross-compiled from the Ruby-based AsciiDoc implementation, Asciidoctor, using Opal",
+  "main": "asciidoctorjs.js",
+  "files": [
+    "bin"
+  ],
+  "bin": {
+    "asciidoctorjs": "bin/asciidoctorjs"
+  },
+  "preferGlobal": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/asciidoctor/asciidoctor-cli.js.git"
+  },
+  "keywords": [
+    "asciidoc",
+    "asciidoctor",
+    "asciidoctor-cli",
+    "opal",
+    "javascript",
+    "library"
+  ],
+  "authors": [
+    "Dan Allen (https://github.com/mojavelinux)",
+    "Guillaume Grossetie (https://github.com/mogztter)",
+    "Anthonny Quérouil (https://github.com/anthonny)"
+  ],
+  "license": {
+    "type": "MIT",
+    "url": "https://github.com/asciidoctor/asciidoctor-cli.js/blob/master/LICENSE"
+  },
+  "bugs": {
+    "url": "https://github.com/asciidoctor/asciidoctor-cli.js/issues"
+  },
+  "homepage": "https://github.com/asciidoctor/asciidoctor-cli.js",
+  "dependencies": {
+    "cli": "^0.6.5",
+    "mkdirp": "^0.5.0",
+    "asciidoctor.js": "1.5.2"
+  }
+}
