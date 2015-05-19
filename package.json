@@ -1,7 +1,7 @@
 {
   "name": "asciidoctor-cli",
   "version": "1.5.2",
-  "description": "A JavaScript AsciiDoc processor, cross-compiled from the Ruby-based AsciiDoc implementation, Asciidoctor, using Opal",
+  "description": "The Asciidoctor.js command line interface",
   "main": "asciidoctorjs.js",
   "files": [
     "bin"
