@@ -16,6 +16,7 @@ var convert_options = function (cliOptions) {
   var backend = cliOptions['backend'];
   var doctype = cliOptions['doctype'];
   var safeMode = cliOptions['safe-mode'];
+  var noHeaderFooter = cliOptions['no-header-footer']
   var sectionNumbers = cliOptions['section-numbers'];
   var baseDir = cliOptions['base-dir'];
   var destinationDir = cliOptions['destination-dir'];
@@ -25,6 +26,7 @@ var convert_options = function (cliOptions) {
   var trace = cliOptions['trace'];
   cli.debug('backend ' + backend);
   cli.debug('doctype ' + doctype);
+  cli.debug('header_footer ' + !noHeaderFooter);
   cli.debug('section-numbers ' + sectionNumbers);
   cli.debug('quiet ' + quiet);
   cli.debug('verbose ' + verbose);
@@ -33,8 +35,14 @@ var convert_options = function (cliOptions) {
   cli.debug('baseDir ' + baseDir);
   cli.debug('destinationDir ' + destinationDir);
   var verboseMode = quiet ? 0 : verbose ? 2 : 1;
-  var defaultAttributes = 'showtitle';
-  var attributes = defaultAttributes;
+  var attributes;
+  if (noHeaderFooter) {
+    attributes = 'showtitle';
+  }
+  else {
+    // Asciidoctor.js currently cannot read or resolve the default stylesheet
+    attributes = 'linkcss';
+  }
   if (sectionNumbers) {
     attributes.concat(' ').concat('sectnums');
   }
@@ -44,6 +52,7 @@ var convert_options = function (cliOptions) {
     backend: backend,
     doctype: doctype,
     safe: safeMode,
+    header_footer: !noHeaderFooter,
     verbose: verboseMode,
     // FIXME 22/12/2014, exception is thrown at runtime
     //timings: timings,
@@ -102,6 +111,7 @@ cli.parse({
   'doctype':          ['d', 'document type to use when converting document: [article, book, manpage, inline] (default: article)', 'string', 'article'],
   'out-file':         ['o', 'output file (default: based on path of input file); use \'\' to output to STDOUT', 'file'],
   'safe-mode':        ['S', 'set safe mode level explicitly: [unsafe, safe, server, secure] (default: unsafe)), disables potentially dangerous macros in source files, such as include::[]', 'string', 'unsafe'],
+  'no-header-footer': ['s', 'suppress output of header and footer (default: false)', 'boolean', false],
   'section-numbers':  ['n', 'auto-number section titles in the HTML backend; disabled by default', 'boolean', 'false'],
   'base-dir':         ['B', 'base directory containing the document and resources (default: directory of source file)', 'path'],
   'destination-dir':  ['D', 'destination output directory (default: directory of source file)', 'path'],
