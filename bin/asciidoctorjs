@@ -40,8 +40,7 @@ var convert_options = function (cliOptions) {
   }
   cli.debug('verboseMode ' + verboseMode);
   cli.debug('attributes ' + attributes);
-  var optionsKeys = ['backend', 'doctype', 'safe', 'verbose', /*'timings',*/ 'trace'];
-  var optionsValues = {
+  var options = {
     backend: backend,
     doctype: doctype,
     safe: safeMode,
@@ -51,18 +50,14 @@ var convert_options = function (cliOptions) {
     trace: trace
   };
   if (baseDir != null) {
-    optionsKeys.push('base_dir');
-    optionsValues.base_dir = baseDir
+    options.base_dir = baseDir
   }/*
   if (destinationDir != null) {
-    optionsKeys.push('to_dir');
-    optionsValues.to_dir = destinationDir;
+    options.to_dir = destinationDir;
   }*/
-  optionsKeys.push('attributes');
-  optionsValues.attributes = attributes;
-  cli.debug('optionsKeys ' + optionsKeys);
-  cli.debug('optionsValues ' + JSON.stringify(optionsValues));
-  return opal.hash2(optionsKeys, optionsValues);
+  options.attributes = attributes;
+  cli.debug('options ' + JSON.stringify(options));
+  return opal.hash(options);
 }
 
 var convert_file = function (file, options) {
