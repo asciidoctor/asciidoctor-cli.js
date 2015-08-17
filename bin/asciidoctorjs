@@ -24,6 +24,7 @@ var convert_options = function (cliOptions) {
   var verbose = cliOptions['verbose'];
   var timings = cliOptions['timings'];
   var trace = cliOptions['trace'];
+  var hardBreaks = cliOptions['hard-breaks'];
   cli.debug('backend ' + backend);
   cli.debug('doctype ' + doctype);
   cli.debug('header_footer ' + !noHeaderFooter);
@@ -34,6 +35,7 @@ var convert_options = function (cliOptions) {
   cli.debug('trace ' + trace);
   cli.debug('baseDir ' + baseDir);
   cli.debug('destinationDir ' + destinationDir);
+  cli.debug('hardBreaks ' + hardBreaks);
   var verboseMode = quiet ? 0 : verbose ? 2 : 1;
   var attributes;
   if (noHeaderFooter) {
@@ -43,8 +45,11 @@ var convert_options = function (cliOptions) {
     // Asciidoctor.js currently cannot read or resolve the default stylesheet
     attributes = 'linkcss';
   }
-  if (sectionNumbers) {
-    attributes.concat(' ').concat('sectnums');
+  if (sectionNumbers === true) {
+    attributes = attributes.concat(' ').concat('sectnums');
+  }
+  if (hardBreaks === true) {
+    attributes = attributes.concat(' ').concat('hardbreaks');
   }
   cli.debug('verboseMode ' + verboseMode);
   cli.debug('attributes ' + attributes);
@@ -118,7 +123,8 @@ cli.parse({
   'quiet':            ['q', 'suppress warnings (default: false)', 'boolean', 'false'],
   'trace':            [false, 'include backtrace information on errors (default: false)', 'boolean', 'false'],
   'verbose':          ['v', 'enable verbose mode (default: false)', 'boolean', 'false'],
-  'timings':          ['t', 'enable timings mode (default: false)', 'boolean', 'false']
+  'timings':          ['t', 'enable timings mode (default: false)', 'boolean', 'false'],
+  'hard-breaks':      ['h', 'inject the asciidoctor \'hardbreaks\' attribute, used for generating hard returns (default: false)', 'boolean', 'false']
 });
 
 cli.main(function (cliArgs, cliOptions) {
