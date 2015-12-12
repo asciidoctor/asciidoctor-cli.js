@@ -133,7 +133,7 @@ cli.main(function (cliArgs, cliOptions) {
   var version = cliOptions['version'];
   var displayVersion = version || (verbose && cliArgs.length == 0);
   if (displayVersion) {
-    cli.info("Asciidoctor 1.5.3 [http://asciidoctor.org]");
+    cli.info("Asciidoctor " + processor._scope.VERSION + " [http://asciidoctor.org]");
     var releaseName = process.release ? process.release.name : 'node';
     cli.info("Runtime Environment (" + releaseName + " " + process.version + " on " + process.platform + ")");
   } else {
