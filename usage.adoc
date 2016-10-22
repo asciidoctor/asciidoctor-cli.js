@@ -1,0 +1,20 @@
+= User Manual
+
+This manual assumes that the Asciidoctor.js command line interface is installed and available in your `PATH`.
+
+== Convert an AsciiDoc document to HTML5
+
+ $ asciidoctorjs document.adoc
+
+== Convert an AsciiDoc document to a Reveal.js presentation
+
+First we need to install the following Node.js modules:
+
+ $ npm install asciidoctor-template.js
+ $ npm install asciidoctor-reveal.js
+
+Now we can use the "revealjs" backend! The following command will convert the file named "presentation.adoc" into a Reveal.js presentation:
+
+ $ asciidoctorjs -b revealjs -a revealjsdir=node_modules/reveal.js presentation.adoc
+
+IMPORTANT: Depending on your npm version, you might need to modify the `revealjsdir` attribute value to : `node_modules/asciidoctor-reveal.js/node_modules/reveal.js`

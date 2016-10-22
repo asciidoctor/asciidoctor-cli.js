@@ -24,6 +24,15 @@ var convert_options = function (cliOptions) {
   var verbose = cliOptions['verbose'];
   var timings = cliOptions['timings'];
   var trace = cliOptions['trace'];
+  if (backend === 'revealjs') {
+    try {
+      require('asciidoctor-template.js');
+    } catch(e) {
+      console.error(e.message);
+      console.error('Asciidoctor template is required to use Reveal.js backend. Try running `npm install asciidoctor-template.js`.');
+      process.exit(e.code);
+    }
+  }
   cli.debug('backend ' + backend);
   cli.debug('doctype ' + doctype);
   cli.debug('header_footer ' + !noHeaderFooter);
@@ -35,18 +44,16 @@ var convert_options = function (cliOptions) {
   cli.debug('baseDir ' + baseDir);
   cli.debug('destinationDir ' + destinationDir);
   var verboseMode = quiet ? 0 : verbose ? 2 : 1;
-  var attributes;
+  var attributes = '';
   if (noHeaderFooter) {
-    attributes = 'showtitle';
-  } else {
-    attributes = '';
+    attributes = 'showtitle ';
   }
   if (sectionNumbers) {
-    attributes = attributes.concat(' ').concat('sectnums');
+    attributes = attributes.concat('sectnums ');
   }
   var cliAttributes = cliOptions['attribute'];
   if (cliAttributes) {
-    attributes = attributes.concat(' ').concat(cliAttributes);
+    attributes = attributes.concat(cliAttributes);
   }
   cli.debug('verboseMode ' + verboseMode);
   cli.debug('attributes ' + attributes);
