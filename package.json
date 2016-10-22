@@ -1,10 +1,11 @@
 {
   "name": "asciidoctor-cli",
-  "version": "1.5.2-alpha.3",
+  "version": "1.5.5-beta.1",
   "description": "The Asciidoctor.js command line interface",
-  "main": "asciidoctorjs.js",
+  "main": "bin/asciidoctorjs",
   "files": [
-    "bin"
+    "bin",
+    "asciidoctor.css"
   ],
   "bin": {
     "asciidoctorjs": "bin/asciidoctorjs"
@@ -30,10 +31,7 @@
     "Guillaume Grossetie (https://github.com/mogztter)",
     "Anthonny Quérouil (https://github.com/anthonny)"
   ],
-  "license": {
-    "type": "MIT",
-    "url": "https://github.com/asciidoctor/asciidoctor-cli.js/blob/master/LICENSE"
-  },
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/asciidoctor/asciidoctor-cli.js/issues"
   },
@@ -41,6 +39,6 @@
   "dependencies": {
     "cli": "^0.6.5",
     "mkdirp": "^0.5.0",
-    "asciidoctor.js": "1.5.2"
+    "asciidoctor.js": "1.5.5-3"
   }
 }

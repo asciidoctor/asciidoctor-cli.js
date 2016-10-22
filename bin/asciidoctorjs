@@ -38,10 +38,8 @@ var convert_options = function (cliOptions) {
   var attributes;
   if (noHeaderFooter) {
     attributes = 'showtitle';
-  }
-  else {
-    // Asciidoctor.js currently cannot read or resolve the default stylesheet
-    attributes = 'linkcss';
+  } else {
+    attributes = '';
   }
   if (sectionNumbers) {
     attributes = attributes.concat(' ').concat('sectnums');
