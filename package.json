@@ -1,6 +1,6 @@
 {
   "name": "asciidoctor-cli",
-  "version": "1.5.5-beta.2",
+  "version": "1.5.5-beta.3",
   "description": "The Asciidoctor.js command line interface",
   "main": "bin/asciidoctorjs",
   "files": [
@@ -39,6 +39,6 @@
   "dependencies": {
     "cli": "^0.6.5",
     "mkdirp": "^0.5.0",
-    "asciidoctor.js": "1.5.5-3"
+    "asciidoctor.js": "1.5.5-4"
   }
 }
