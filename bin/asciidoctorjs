@@ -108,9 +108,8 @@ var output_result = function (data, file, cliOptions) {
     } else {
       var outputFile = outDir + path.sep + outFile;
     }
-    cli.debug('write result in ' + outputFile);
     fs.writeFileSync(outputFile, data);
-    cli.ok(file + ' converted to ' + backend + ' in ' + outputFile);
+    cli.debug(file + ' converted to ' + backend + ' in ' + outputFile);
   }
 }
 
