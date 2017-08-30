@@ -8,8 +8,7 @@ var cli = require('cli').enable('status');
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
-var Asciidoctor = require('asciidoctor.js');
-var processor = Asciidoctor();
+var processor = require('asciidoctor.js')();
 
 var convert_options = function (cliOptions) {
   var backend = cliOptions['backend'];
