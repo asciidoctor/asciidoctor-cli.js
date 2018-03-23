@@ -8,8 +8,7 @@ var cli = require('cli').enable('status');
 var fs = require('fs');
 var path = require('path');
 var mkdirp = require('mkdirp');
-var Asciidoctor = require('asciidoctor.js');
-var processor = Asciidoctor();
+var asciidoctor = require('asciidoctor.js')();
 
 var convert_options = function (cliOptions) {
   var backend = cliOptions['backend'];
@@ -80,7 +79,7 @@ var convert_options = function (cliOptions) {
 var convert_file = function (file, options) {
   cli.debug('convert file ' + file + ' with options ' + options);
   var data = fs.readFileSync(file, 'utf8');
-  return processor.convert(data, options);
+  return asciidoctor.convert(data, options);
 };
 
 var output_result = function (data, file, cliOptions) {
@@ -136,7 +135,7 @@ cli.main(function (cliArgs, cliOptions) {
   var version = cliOptions['version'];
   var displayVersion = version || (verbose && cliArgs.length == 0);
   if (displayVersion) {
-    cli.info("Asciidoctor " + processor.$$scope.VERSION + " [http://asciidoctor.org]");
+    cli.info("Asciidoctor " + asciidoctor.getCoreVersion() + " [http://asciidoctor.org]");
     var releaseName = process.release ? process.release.name : 'node';
     cli.info("Runtime Environment (" + releaseName + " " + process.version + " on " + process.platform + ")");
   } else {
