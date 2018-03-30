@@ -40,8 +40,13 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor-cli.js",
   "dependencies": {
-    "asciidoctor.js": "1.5.6-rc.1",
     "cli": "^0.6.5",
     "mkdirp": "^0.5.0"
+  },
+  "devDependencies": {
+    "asciidoctor.js": "^1.5.6-rc.1"
+  },
+  "peerDependencies": {
+    "asciidoctor.js": ">=1.5.6-rc.1 <1.6"
   }
 }
