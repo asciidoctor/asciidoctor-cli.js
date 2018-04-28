@@ -18,7 +18,7 @@
   },
   "preferGlobal": true,
   "scripts": {
-    "test": "./bin/asciidoctorjs --version",
+    "test": "./bin/asciidoctorjs --version && mocha",
     "lint": "standard bin/* lib/*.js",
     "prepublishOnly": "node scripts/prepublish.js",
     "postpublish": "node scripts/postpublish.js"
@@ -46,13 +46,14 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor-cli.js",
   "dependencies": {
-    "cli": "^0.6.5",
-    "standard": "^11.0.1"
+    "yargs": "11.0.0"
   },
   "devDependencies": {
-    "asciidoctor.js": "^1.5.6-rc.1"
+    "asciidoctor.js": "1.5.6",
+    "mocha": "^5.1.1",
+    "standard": "^11.0.1"
   },
   "peerDependencies": {
-    "asciidoctor.js": ">=1.5.6-rc.1 <1.6"
+    "asciidoctor.js": ">=1.5.6 <1.6"
   }
 }
