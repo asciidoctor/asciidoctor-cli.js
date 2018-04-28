@@ -46,12 +46,12 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor-cli.js",
   "dependencies": {
-    "standard": "^11.0.1",
     "yargs": "11.0.0"
   },
   "devDependencies": {
     "asciidoctor.js": "1.5.6",
-    "mocha": "^5.1.1"
+    "mocha": "^5.1.1",
+    "standard": "^11.0.1"
   },
   "peerDependencies": {
     "asciidoctor.js": ">=1.5.6 <1.6"
