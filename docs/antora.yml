@@ -1,0 +1,6 @@
+name: asciidoctor-cli.js
+title: Asciidoctor.js CLI
+version: master
+nav:
+- modules/setup/nav.adoc
+- modules/integration/nav.adoc

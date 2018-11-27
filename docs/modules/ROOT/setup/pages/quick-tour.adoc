@@ -1,0 +1,17 @@
+= A quick tour
+
+== Invoke Asciidoctor.js from the CLI
+
+To invoke Asciidoctor.js from the CLI and convert an `.adoc` file, execute:
+
+[source]
+$ asciidoctorjs document.adoc
+
+This will use the built-in defaults for options and create a new file in the same directory as the input file, with the same base name, but with the `.html` extension.
+
+The xref:options-and-parameters.adoc[Command Line Options and Parameters] describes the available Asciidoctor CLI options and parameters.
+
+Full help is provided via:
+
+[source]
+$ asciidoctorjs --help

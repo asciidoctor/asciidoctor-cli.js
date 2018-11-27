@@ -1,0 +1,36 @@
+= Install guide
+
+Assumptions:
+
+* [x] You've installed Node 8.11+ on your machine.
+
+On this page, you'll learn:
+
+* [x] How to install Asciidoctor.js CLI.
+
+== Install Asciidoctor.js CLI
+
+You must have Asciidoctor.js installed to use it.
+
+Install Asciidoctor.js and the CLI globally and you'll have access to the `asciidoctorjs` command anywhere on your system.
+Open a terminal and type:
+
+[source]
+$ npm i -g asciidoctor.js asciidoctor-cli
+
+NOTE: If you prefer Yarn over npm, you can install Asciidoctor.js using `yarn global add asciidoctor.js asciidoctor-cli`
+
+If the module installed successfully, its command line interface (CLI) will be available on your `PATH`.
+To confirm that Asciidoctor.js CLI is available, execute:
+
+[source]
+$ asciidoctorjs --version
+
+You should see information about the Asciidoctor.js CLI version printed in the terminal.
+
+[source]
+1.5.6-rc.1
+
+== What's next?
+
+Now that Asciidoctor.js CLI is installed, you are ready to take a xref:quick-tour.adoc[quick tour].

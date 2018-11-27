@@ -5,7 +5,7 @@ image:https://img.shields.io/travis/asciidoctor/asciidoctor-cli.js/master.svg[Tr
 image:https://img.shields.io/npm/v/asciidoctor-cli.svg[npm version, link=https://www.npmjs.org/package/asciidoctor-cli]
 endif::[]
 
-The command line interface (CLI) for Asciidoctor.js.
+The Command Line Interface (CLI) for Asciidoctor.js.
 You must have Asciidoctor.js installed to use it.
 
 Install Asciidoctor.js and the CLI globally and you'll have access to the `asciidoctorjs` command anywhere on your system.
