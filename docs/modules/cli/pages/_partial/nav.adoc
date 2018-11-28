@@ -1,5 +1,5 @@
-* xref:cli:asciidoctorjs/index.adoc[Asciidoctor.js CLI]
-** xref:cli:asciidoctorjs/install.adoc[Install guide]
-** xref:cli:asciidoctorjs/quick-tour.adoc[A quick tour]
+* xref:cli:index.adoc[Asciidoctor.js CLI]
+** xref:cli:install.adoc[Install guide]
+** xref:cli:quick-tour.adoc[A quick tour]
 ** Integration
-*** xref:cli:asciidoctorjs/revealjs.adoc[reveal.js]
+*** xref:cli:integration-revealjs.adoc[reveal.js]
