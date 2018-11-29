@@ -3,30 +3,30 @@
 In this section, you'll learn:
 
 * [x] How to install the required dependencies.
-* [x]  What attributes you must define.
-* [x] How to convert an AsciiDoc file to a _reveal.js_ presentation.
+* [x] What attributes you must define.
+* [x] How to convert an AsciiDoc file to a https://revealjs.com/[reveal.js] presentation.
 
 == Prerequisites
 
 We assume that you already have a fully working version of Asciidoctor.js CLI installed and available in your `PATH`.
-If this is not the case, please read the xref:setup/install.adoc[installation instructions].
+If this is not the case, please read the xref:install.adoc[installation instructions].
 
 To convert an AsciiDoc file to a _reveal.js_ presentation, we will need to install the following module:
 
-[source]
-$ npm i asciidoctor-reveal.js
+ $ npm i asciidoctor-reveal.js
 
-NOTE: If you prefer Yarn over npm, you can install Asciidoctor.js reveal.js using `yarn add asciidoctor-reveal.js`
+NOTE: If you prefer Yarn over npm, you can install Asciidoctor.js reveal.js using `yarn add asciidoctor-reveal.js`.
 
 Please remember that if you want this converter to be available anywhere on your system,
 you will have to install this module with the `--global` option with `npm` or the `global` command with Yarn.
 
 == Convert an AsciiDoc presentation into slides
 
-Once this module is installed, we create a file named _presentation.adoc_ with the following content:
+Once this module is installed, we create a file named [.path]_presentation.adoc_ with the following content:
 
 .presentation.adoc
-```adoc
+[source,asciidoc]
+----
 = Presentation title
 
 == First slide
@@ -37,7 +37,7 @@ Once this module is installed, we create a file named _presentation.adoc_ with t
 == Second slide
 
 With some *fascinating* content!
-```
+----
 
 The next step is to convert this file to a _reveal.js_ presentation using the `asciidoctorjs` command line:
 
@@ -50,7 +50,7 @@ asciidoctorjs presentation.adoc \
 ----
 <1> Require the `asciidoctor-reveal.js` module
 <2> Use the _revealjs_ backend
-<3> Specify that the reveal.js directory is located at _node_modules/reveal.js_
+<3> Specify that the reveal.js directory is located at [.path]_node_modules/reveal.js_
 
-The above command should create a file named _presentation.html_.
+The above command should create a file named [.path]_presentation.html_.
 Open it in a browser to view your presentation!

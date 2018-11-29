@@ -15,16 +15,14 @@ You must have Asciidoctor.js installed to use it.
 Install Asciidoctor.js and the CLI globally and you'll have access to the `asciidoctorjs` command anywhere on your system.
 Open a terminal and type:
 
-[source]
-$ npm i -g asciidoctor.js asciidoctor-cli
+ $ npm i -g asciidoctor.js asciidoctor-cli
 
-NOTE: If you prefer Yarn over npm, you can install Asciidoctor.js using `yarn global add asciidoctor.js asciidoctor-cli`
+NOTE: If you prefer Yarn over npm, you can install Asciidoctor.js using `yarn global add asciidoctor.js asciidoctor-cli`.
 
 If the module installed successfully, its command line interface (CLI) will be available on your `PATH`.
 To confirm that Asciidoctor.js CLI is available, execute:
 
-[source]
-$ asciidoctorjs --version
+ $ asciidoctorjs --version
 
 You should see information about the Asciidoctor.js CLI version printed in the terminal.
 

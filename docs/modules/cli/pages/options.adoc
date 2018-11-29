@@ -1,4 +1,4 @@
-= CLI Options and Parameters
+= CLI Options
 
 == Security settings
 

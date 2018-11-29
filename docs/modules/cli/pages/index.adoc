@@ -1,3 +1,3 @@
 = Asciidoctor.js CLI Documentation
 
-The Command Line Interface (CLI) for xref:master@asciidoctor.js:ROOT/index.adoc[Asciidoctor.js].
+The Command Line Interface (CLI) for xref:ROOT:index.adoc[Asciidoctor.js].
