@@ -1,12 +1,11 @@
 {
   "name": "asciidoctor-cli",
-  "version": "1.5.6-rc.1",
-  "description": "The command line interface (CLI) for Asciidoctor.js",
+  "version": "2.0.0",
+  "description": "The Command Line Interface (CLI) for Asciidoctor.js",
   "main": "bin/asciidoctorjs",
   "engines": {
-    "node": ">=6.12",
-    "npm": ">=3.0.0",
-    "yarn": ">=1.1.0"
+    "node": ">=8.11",
+    "npm": ">=5.0.0"
   },
   "files": [
     "bin",
@@ -46,12 +45,12 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor-cli.js",
   "dependencies": {
-    "yargs": "11.0.0"
+    "yargs": "12.0.5"
   },
   "devDependencies": {
-    "asciidoctor.js": "1.5.6",
-    "mocha": "^5.1.1",
-    "standard": "^11.0.1"
+    "asciidoctor.js": "1.5.9",
+    "mocha": "5.1.1",
+    "standard": "12.0.1"
   },
   "peerDependencies": {
     "asciidoctor.js": ">=1.5.6 <1.6"

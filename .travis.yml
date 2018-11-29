@@ -9,5 +9,5 @@ cache:
   - node_modules
 
 script:
-- yarn lint
-- yarn test
+- npm run lint
+- npm run test
