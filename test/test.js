@@ -7,7 +7,7 @@ const dirtyChai = require('dirty-chai')
 chai.use(dirtyChai)
 
 const stdin = require('../lib/stdin')
-const { run, processor, convertOptions, processFiles } = require('../lib/cli.js')
+const { run, processor, convertOptions, processFiles, prepareProcessor } = require('../lib/cli.js')
 const argsParser = require('../lib/cli.js').argsParser()
 
 describe('Arguments parser', () => {
@@ -180,5 +180,31 @@ describe('Process files', () => {
     } finally {
       process.exit.restore()
     }
+  })
+})
+
+describe('Require option', () => {
+  it('should require an extension library', () => {
+    const asciidoctor = require('@asciidoctor/core')()
+    try {
+      expect(Object.keys(asciidoctor.Extensions.getGroups()).length).to.equal(0)
+      prepareProcessor(argsParser.parse('one.adoc -r ./test/fixtures/shout-ext.js'), asciidoctor)
+      expect(Object.keys(asciidoctor.Extensions.getGroups()).length).to.equal(1)
+    } finally {
+      asciidoctor.Extensions.unregisterAll()
+    }
+  })
+
+  it('should require a converter library', () => {
+    const asciidoctor = require('@asciidoctor/core')()
+    try {
+      asciidoctor.convert('Hello', { backend: 'blog' })
+      expect.fail('blog backend should be missing')
+    } catch (e) {
+      expect(e.message).to.equal('asciidoctor: FAILED: missing converter for backend \'blog\'. Processing aborted.')
+    }
+    prepareProcessor(argsParser.parse('one.adoc -r ./test/fixtures/blog-converter.js'), asciidoctor)
+    const html = asciidoctor.convert('Hello', { backend: 'blog' })
+    expect(html).to.equal('<blog></blog>')
   })
 })
