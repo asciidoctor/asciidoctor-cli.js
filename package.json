@@ -1,8 +1,8 @@
 {
-  "name": "asciidoctor-cli",
+  "name": "@asciidoctor/cli",
   "version": "2.0.0",
   "description": "The Command Line Interface (CLI) for Asciidoctor.js",
-  "main": "bin/asciidoctorjs",
+  "main": "bin/asciidoctor",
   "engines": {
     "node": ">=8.11",
     "npm": ">=5.0.0"
@@ -13,11 +13,11 @@
     "asciidoctor.css"
   ],
   "bin": {
-    "asciidoctorjs": "bin/asciidoctorjs"
+    "asciidoctor": "bin/asciidoctor"
   },
   "preferGlobal": true,
   "scripts": {
-    "test": "./bin/asciidoctorjs --version && mocha",
+    "test": "./bin/asciidoctor --version && mocha",
     "lint": "standard bin/* lib/*.js",
     "prepublishOnly": "node scripts/prepublish.js",
     "postpublish": "node scripts/postpublish.js"
@@ -48,11 +48,11 @@
     "yargs": "12.0.5"
   },
   "devDependencies": {
-    "asciidoctor.js": "1.5.9",
+    "@asciidoctor/core": "2.0.0",
     "mocha": "5.1.1",
     "standard": "12.0.1"
   },
   "peerDependencies": {
-    "asciidoctor.js": ">=1.5.6 <1.6"
+    "@asciidoctor/core": ">=2 <3"
   }
 }
