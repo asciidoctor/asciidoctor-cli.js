@@ -27,6 +27,9 @@
     "type": "git",
     "url": "https://github.com/asciidoctor/asciidoctor-cli.js.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "asciidoc",
     "asciidoctor",
