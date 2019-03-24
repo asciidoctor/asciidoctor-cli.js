@@ -19,7 +19,7 @@
   "preferGlobal": true,
   "scripts": {
     "test": "./bin/asciidoctor --version && mocha",
-    "lint": "standard bin/* lib/*.js",
+    "lint": "standard bin/* lib/*.js test/*.js",
     "prepublishOnly": "node scripts/prepublish.js",
     "postpublish": "node scripts/postpublish.js"
   },
@@ -55,5 +55,8 @@
   },
   "peerDependencies": {
     "@asciidoctor/core": "^2.0.0-rc.1"
+  },
+  "standard": {
+    "env": "mocha"
   }
 }
