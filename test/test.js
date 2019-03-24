@@ -44,7 +44,7 @@ describe('Options converter', () => {
     assert.strictEqual(options['timings'], false)
     assert.strictEqual(options['trace'], false)
     assert.strictEqual(options['mkdirs'], true)
-    assert.strictEqual(options['attributes'], '')
+    assert.strictEqual(options['attributes'].length, 0)
   })
 
   it('should convert a list of default attributes to a list of Asciidoctor options', () => {
