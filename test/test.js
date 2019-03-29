@@ -1,6 +1,9 @@
 const chai = require('chai')
+const sinon = require('sinon')
+const path = require('path')
 const argsParser = require('../lib/cli.js').argsParser()
 const optionsConverter = require('../lib/cli.js').convertOptions
+const processFiles = require('../lib/cli.js').processFiles
 const expect = chai.expect
 const dirtyChai = require('dirty-chai')
 chai.use(dirtyChai)
@@ -50,6 +53,7 @@ describe('Options converter', () => {
     expect(options['trace']).to.be.false()
     expect(options['mkdirs']).to.be.true()
     expect(options['attributes']).to.be.empty()
+    expect(options['failure_level']).to.equal(4)
   })
 
   it('should set the attributes option', () => {
@@ -83,5 +87,60 @@ describe('Options converter', () => {
     const args = argsParser.parse('one.adoc -s')
     const options = optionsConverter(args)
     expect(options['standalone']).to.be.false()
+  })
+
+  // DEBUG: 0
+  // INFO: 1
+  // WARN: 2
+  // ERROR: 3
+  // FATAL: 4
+  it('should set failure level option to INFO', () => {
+    const args = argsParser.parse('one.adoc --failure-level info')
+    const options = optionsConverter(args)
+    expect(options['failure_level']).to.equal(1)
+  })
+
+  it('should set failure level option to WARNING', () => {
+    const args = argsParser.parse('one.adoc --failure-level WARNING')
+    const options = optionsConverter(args)
+    expect(options['failure_level']).to.equal(2)
+  })
+
+  it('should set failure level option to WARN', () => {
+    const args = argsParser.parse('one.adoc --failure-level WARN')
+    const options = optionsConverter(args)
+    expect(options['failure_level']).to.equal(2)
+  })
+
+  it('should set failure level option to ERROR', () => {
+    const args = argsParser.parse('one.adoc --failure-level error')
+    const options = optionsConverter(args)
+    expect(options['failure_level']).to.equal(3)
+  })
+})
+
+describe('Process files', () => {
+  // Asciidoctor will log an ERROR when processing book.adoc:
+  // asciidoctor: ERROR: book.adoc: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)
+  const bookFilePath = path.join(__dirname, 'fixtures', 'book.adoc')
+  it('should exit with code 1 when failure level is lower than the maximum logging level', () => {
+    sinon.stub(process, 'exit')
+    try {
+      processFiles([bookFilePath], false, false, { failure_level: 3 }) // ERROR: 3
+      expect(process.exit.called).to.be.true()
+      expect(process.exit.calledWith(1)).to.be.true()
+    } finally {
+      process.exit.restore()
+    }
+  })
+  it('should exit with code 0 when failure level is lower than the maximum logging level', () => {
+    sinon.stub(process, 'exit')
+    try {
+      processFiles([bookFilePath], false, false, { failure_level: 4 }) // FATAL: 4
+      expect(process.exit.called).to.be.true()
+      expect(process.exit.calledWith(0)).to.be.true()
+    } finally {
+      process.exit.restore()
+    }
   })
 })
