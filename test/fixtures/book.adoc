@@ -1,0 +1,7 @@
+= Book
+:doctype: book
+
+= Part 1
+
+[partintro]
+intro
