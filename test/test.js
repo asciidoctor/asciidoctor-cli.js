@@ -39,12 +39,12 @@ describe('Arguments parser', () => {
 })
 
 describe('Options converter', () => {
-  it('should convert a list of default values to a list of Asciidoctor options', () => {
+  it('should have default options', () => {
     const options = optionsConverter(argsParser.parse(''))
     expect(options['backend']).to.equal('html5')
     expect(options['doctype']).to.equal('article')
     expect(options['safe']).to.equal('unsafe')
-    expect(options['header_footer']).to.be.true()
+    expect(options['standalone']).to.be.true()
     expect(options['verbose']).to.equal(1)
     expect(options['timings']).to.be.false()
     expect(options['trace']).to.be.false()
@@ -52,20 +52,36 @@ describe('Options converter', () => {
     expect(options['attributes']).to.be.empty()
   })
 
-  it('should convert a list of default attributes to a list of Asciidoctor options', () => {
+  it('should set the attributes option', () => {
     const args = argsParser.parse('one.adoc -a source-highlighter=highlight.js --attribute icons=font@ -a lang=fr')
     const options = optionsConverter(args)
-    expect(options['backend']).to.equal('html5')
-    expect(options['doctype']).to.equal('article')
-    expect(options['safe']).to.equal('unsafe')
-    expect(options['header_footer']).to.be.true()
-    expect(options['verbose']).to.equal(1)
-    expect(options['timings']).to.be.false()
-    expect(options['trace']).to.be.false()
-    expect(options['mkdirs']).to.be.true()
     expect(options['attributes']).to.have.length(3)
     expect(options['attributes']).to.include('source-highlighter=highlight.js')
     expect(options['attributes']).to.include('icons=font@')
     expect(options['attributes']).to.include('lang=fr')
+  })
+
+  it('should set the standalone option to false if --embedded option is present', () => {
+    const args = argsParser.parse('one.adoc --embedded')
+    const options = optionsConverter(args)
+    expect(options['standalone']).to.be.false()
+  })
+
+  it('should set standalone option to false if -e option is present', () => {
+    const args = argsParser.parse('one.adoc -e')
+    const options = optionsConverter(args)
+    expect(options['standalone']).to.be.false()
+  })
+
+  it('should set standalone option to false if --no-header-footer option is present', () => {
+    const args = argsParser.parse('one.adoc --no-header-footer')
+    const options = optionsConverter(args)
+    expect(options['standalone']).to.be.false()
+  })
+
+  it('should set standalone option to false if -s option is present', () => {
+    const args = argsParser.parse('one.adoc -s')
+    const options = optionsConverter(args)
+    expect(options['standalone']).to.be.false()
   })
 })
