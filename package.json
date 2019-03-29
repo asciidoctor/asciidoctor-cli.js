@@ -53,6 +53,8 @@
   },
   "devDependencies": {
     "@asciidoctor/core": "^2.0.0-rc.1",
+    "chai": "^4.2.0",
+    "dirty-chai": "^2.0.1",
     "mocha": "5.1.1",
     "standard": "12.0.1"
   },
