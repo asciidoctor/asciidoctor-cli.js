@@ -49,7 +49,7 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor-cli.js",
   "dependencies": {
-    "yargs": "12.0.5"
+    "yargs": "13.2.2"
   },
   "devDependencies": {
     "@asciidoctor/core": "^2.0.0-rc.1",
