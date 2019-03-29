@@ -1,12 +1,14 @@
+/* global Opal */
 const chai = require('chai')
 const sinon = require('sinon')
 const path = require('path')
-const argsParser = require('../lib/cli.js').argsParser()
-const optionsConverter = require('../lib/cli.js').convertOptions
-const processFiles = require('../lib/cli.js').processFiles
 const expect = chai.expect
 const dirtyChai = require('dirty-chai')
 chai.use(dirtyChai)
+
+const stdin = require('../lib/stdin')
+const { run, processor, convertOptions, processFiles } = require('../lib/cli.js')
+const argsParser = require('../lib/cli.js').argsParser()
 
 describe('Arguments parser', () => {
   it('should parse a command with a single file', () => {
@@ -43,7 +45,7 @@ describe('Arguments parser', () => {
 
 describe('Options converter', () => {
   it('should have default options', () => {
-    const options = optionsConverter(argsParser.parse(''))
+    const options = convertOptions(argsParser.parse(''))
     expect(options['backend']).to.equal('html5')
     expect(options['doctype']).to.equal('article')
     expect(options['safe']).to.equal('unsafe')
@@ -58,7 +60,7 @@ describe('Options converter', () => {
 
   it('should set the attributes option', () => {
     const args = argsParser.parse('one.adoc -a source-highlighter=highlight.js --attribute icons=font@ -a lang=fr')
-    const options = optionsConverter(args)
+    const options = convertOptions(args)
     expect(options['attributes']).to.have.length(3)
     expect(options['attributes']).to.include('source-highlighter=highlight.js')
     expect(options['attributes']).to.include('icons=font@')
@@ -67,25 +69,25 @@ describe('Options converter', () => {
 
   it('should set the standalone option to false if --embedded option is present', () => {
     const args = argsParser.parse('one.adoc --embedded')
-    const options = optionsConverter(args)
+    const options = convertOptions(args)
     expect(options['standalone']).to.be.false()
   })
 
   it('should set standalone option to false if -e option is present', () => {
     const args = argsParser.parse('one.adoc -e')
-    const options = optionsConverter(args)
+    const options = convertOptions(args)
     expect(options['standalone']).to.be.false()
   })
 
   it('should set standalone option to false if --no-header-footer option is present', () => {
     const args = argsParser.parse('one.adoc --no-header-footer')
-    const options = optionsConverter(args)
+    const options = convertOptions(args)
     expect(options['standalone']).to.be.false()
   })
 
   it('should set standalone option to false if -s option is present', () => {
     const args = argsParser.parse('one.adoc -s')
-    const options = optionsConverter(args)
+    const options = convertOptions(args)
     expect(options['standalone']).to.be.false()
   })
 
@@ -96,26 +98,61 @@ describe('Options converter', () => {
   // FATAL: 4
   it('should set failure level option to INFO', () => {
     const args = argsParser.parse('one.adoc --failure-level info')
-    const options = optionsConverter(args)
+    const options = convertOptions(args)
     expect(options['failure_level']).to.equal(1)
   })
 
   it('should set failure level option to WARNING', () => {
     const args = argsParser.parse('one.adoc --failure-level WARNING')
-    const options = optionsConverter(args)
+    const options = convertOptions(args)
     expect(options['failure_level']).to.equal(2)
   })
 
   it('should set failure level option to WARN', () => {
     const args = argsParser.parse('one.adoc --failure-level WARN')
-    const options = optionsConverter(args)
+    const options = convertOptions(args)
     expect(options['failure_level']).to.equal(2)
   })
 
   it('should set failure level option to ERROR', () => {
     const args = argsParser.parse('one.adoc --failure-level error')
-    const options = optionsConverter(args)
+    const options = convertOptions(args)
     expect(options['failure_level']).to.equal(3)
+  })
+})
+
+describe('Read from stdin', () => {
+  it('should read from stdin', () => {
+    sinon.stub(stdin, 'read').yields('An *AsciiDoc* input')
+    sinon.stub(processor, 'convert')
+    try {
+      run(['/path/to/node', '/path/to/asciidoctor', '-'])
+      expect(stdin.read.called).to.be.true()
+      expect(processor.convert.called).to.be.true()
+      const firstArgument = processor.convert.getCall(0).args[0]
+      const secondArgument = processor.convert.getCall(0).args[1]
+      expect(firstArgument).to.equal('An *AsciiDoc* input')
+      expect(secondArgument.backend).to.equal('html5')
+      expect(secondArgument.to_file).to.equal(Opal.gvars.stdout)
+    } finally {
+      stdin.read.restore()
+      processor.convert.restore()
+    }
+  })
+})
+
+describe('Help', () => {
+  it('should show an overview of the AsciiDoc syntax', () => {
+    sinon.stub(console, 'log')
+    try {
+      run(['/path/to/node', '/path/to/asciidoctor', '--help', 'syntax'])
+      expect(console.log.called).to.be.true()
+      const asciidocSyntax = console.log.getCall(0).args[0]
+      expect(asciidocSyntax).to.includes('thematic break')
+      expect(asciidocSyntax).to.includes('admonition')
+    } finally {
+      console.log.restore()
+    }
   })
 })
 
@@ -133,6 +170,7 @@ describe('Process files', () => {
       process.exit.restore()
     }
   })
+
   it('should exit with code 0 when failure level is lower than the maximum logging level', () => {
     sinon.stub(process, 'exit')
     try {
