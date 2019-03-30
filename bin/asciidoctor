@@ -4,5 +4,4 @@
 
 process.title = 'asciidoctor'
 const cli = require('../lib/cli.js')
-const argv = cli.argsParser().argv
-cli.run(argv)
+cli.run(process.argv)
