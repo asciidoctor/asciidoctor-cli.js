@@ -2,7 +2,7 @@
 
 ifdef::env-github[]
 image:https://img.shields.io/travis/asciidoctor/asciidoctor-cli.js/master.svg[Travis build status, link=https://travis-ci.org/asciidoctor/asciidoctor-cli.js]
-image:https://img.shields.io/npm/v/asciidoctor-cli.svg[npm version, link=https://www.npmjs.org/package/asciidoctor-cli]
+image:https://img.shields.io/npm/v/@asciidoctor/cli.svg[npm version, link=https://www.npmjs.org/package/@asciidoctor/cli]
 endif::[]
 
 The Command Line Interface (CLI) for Asciidoctor.js.
