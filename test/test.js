@@ -208,3 +208,25 @@ describe('Require option', () => {
     expect(html).to.equal('<blog></blog>')
   })
 })
+
+describe('Array option', () => {
+  it('should parse a command with a list of attributes just before a positional argument', () => {
+    const result = argsParser.parse('-a foo=bar -a baz=quz file.adoc')
+    expect(result['files']).to.have.length(1)
+    expect(result['files']).to.include('file.adoc')
+    expect(result['attribute']).to.have.length(2)
+    expect(result['attribute']).to.include('foo=bar')
+    expect(result['attribute']).to.include('baz=quz')
+  })
+  it('should parse a command with a list of attributes and requires just before a positional argument', () => {
+    const result = argsParser.parse('--attribute foo=bar -a baz=quz -r ./ext.js --require @asciidoctor/reveal.js-converter file.adoc')
+    expect(result['files']).to.have.length(1)
+    expect(result['files']).to.include('file.adoc')
+    expect(result['attribute']).to.have.length(2)
+    expect(result['attribute']).to.include('foo=bar')
+    expect(result['attribute']).to.include('baz=quz')
+    expect(result['require']).to.have.length(2)
+    expect(result['require']).to.include('./ext.js')
+    expect(result['require']).to.include('@asciidoctor/reveal.js-converter')
+  })
+})
