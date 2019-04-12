@@ -9,6 +9,6 @@ The Command Line Interface (CLI) for Asciidoctor.js.
 
 Install Asciidoctor.js globally and you'll have access to the `asciidoctor` command anywhere on your system:
 
- $ npm i -g asciidoctor
+    $ npm i -g asciidoctor
 
 Type `asciidoctor --help` for more information.
