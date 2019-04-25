@@ -46,7 +46,7 @@ describe('Arguments parser', () => {
 
 describe('Options converter', () => {
   it('should have default options', () => {
-    const options = Options.convertOptions(argsParser.parse(''))
+    const options = defaultOptions.parse('').options
     expect(options['backend']).to.equal('html5')
     expect(options['doctype']).to.equal('article')
     expect(options['safe']).to.equal('unsafe')
@@ -60,8 +60,7 @@ describe('Options converter', () => {
   })
 
   it('should set the attributes option', () => {
-    const args = argsParser.parse('one.adoc -a source-highlighter=highlight.js --attribute icons=font@ -a lang=fr')
-    const options = Options.convertOptions(args)
+    const options = defaultOptions.parse('one.adoc -a source-highlighter=highlight.js --attribute icons=font@ -a lang=fr').options
     expect(options['attributes']).to.have.length(3)
     expect(options['attributes']).to.include('source-highlighter=highlight.js')
     expect(options['attributes']).to.include('icons=font@')
@@ -69,26 +68,22 @@ describe('Options converter', () => {
   })
 
   it('should set the standalone option to false if --embedded option is present', () => {
-    const args = argsParser.parse('one.adoc --embedded')
-    const options = Options.convertOptions(args)
+    const options = defaultOptions.parse('one.adoc --embedded').options
     expect(options['standalone']).to.be.false()
   })
 
   it('should set standalone option to false if -e option is present', () => {
-    const args = argsParser.parse('one.adoc -e')
-    const options = Options.convertOptions(args)
+    const options = defaultOptions.parse('one.adoc -e').options
     expect(options['standalone']).to.be.false()
   })
 
   it('should set standalone option to false if --no-header-footer option is present', () => {
-    const args = argsParser.parse('one.adoc --no-header-footer')
-    const options = Options.convertOptions(args)
+    const options = defaultOptions.parse('one.adoc --no-header-footer').options
     expect(options['standalone']).to.be.false()
   })
 
   it('should set standalone option to false if -s option is present', () => {
-    const args = argsParser.parse('one.adoc -s')
-    const options = Options.convertOptions(args)
+    const options = defaultOptions.parse('one.adoc -s').options
     expect(options['standalone']).to.be.false()
   })
 
@@ -98,26 +93,22 @@ describe('Options converter', () => {
   // ERROR: 3
   // FATAL: 4
   it('should set failure level option to INFO', () => {
-    const args = argsParser.parse('one.adoc --failure-level info')
-    const options = Options.convertOptions(args)
+    const options = defaultOptions.parse('one.adoc --failure-level info').options
     expect(options['failure_level']).to.equal(1)
   })
 
   it('should set failure level option to WARNING', () => {
-    const args = argsParser.parse('one.adoc --failure-level WARNING')
-    const options = Options.convertOptions(args)
+    const options = defaultOptions.parse('one.adoc --failure-level WARNING').options
     expect(options['failure_level']).to.equal(2)
   })
 
   it('should set failure level option to WARN', () => {
-    const args = argsParser.parse('one.adoc --failure-level WARN')
-    const options = Options.convertOptions(args)
+    const options = defaultOptions.parse('one.adoc --failure-level WARN').options
     expect(options['failure_level']).to.equal(2)
   })
 
   it('should set failure level option to ERROR', () => {
-    const args = argsParser.parse('one.adoc --failure-level error')
-    const options = Options.convertOptions(args)
+    const options = defaultOptions.parse('one.adoc --failure-level error').options
     expect(options['failure_level']).to.equal(3)
   })
 })
@@ -247,6 +238,14 @@ describe('Options', () => {
     const opts = new Options({ backend: 'pdf' }).parse('node asciidoctor -a foo=bar -b html5')
     expect(opts.options.backend).to.equal('html5')
     expect(opts.options.attributes).to.include('foo=bar')
+  })
+  it('should create options with a default list of attributes', () => {
+    const opts = new Options({ attributes: { foo: 'baz', nofooter: true } }).parse('node asciidoctor -a foo=bar -b html5')
+    expect(opts.options.backend).to.equal('html5')
+    const attributes = opts.options.attributes
+    expect(attributes).to.include('foo=bar')
+    expect(attributes).to.include('nofooter=true')
+    expect(attributes).to.include('foo=baz')
   })
   it('should create options with a default list of attributes', () => {
     const opts = new Options({ attributes: { foo: 'baz', nofooter: true } }).parse('node asciidoctor -a foo=bar -b html5')
