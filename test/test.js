@@ -7,8 +7,9 @@ const dirtyChai = require('dirty-chai')
 chai.use(dirtyChai)
 
 const stdin = require('../lib/stdin')
-const { run, processor, convertOptions, processFiles, prepareProcessor } = require('../lib/cli.js')
-const argsParser = require('../lib/cli.js').argsParser()
+const { processor, Options, Invoker } = require('../lib/cli.js')
+const defaultOptions = new Options()
+const argsParser = defaultOptions.argsParser()
 
 describe('Arguments parser', () => {
   it('should parse a command with a single file', () => {
@@ -45,7 +46,7 @@ describe('Arguments parser', () => {
 
 describe('Options converter', () => {
   it('should have default options', () => {
-    const options = convertOptions(argsParser.parse(''))
+    const options = defaultOptions.parse('').options
     expect(options['backend']).to.equal('html5')
     expect(options['doctype']).to.equal('article')
     expect(options['safe']).to.equal('unsafe')
@@ -59,8 +60,7 @@ describe('Options converter', () => {
   })
 
   it('should set the attributes option', () => {
-    const args = argsParser.parse('one.adoc -a source-highlighter=highlight.js --attribute icons=font@ -a lang=fr')
-    const options = convertOptions(args)
+    const options = defaultOptions.parse('one.adoc -a source-highlighter=highlight.js --attribute icons=font@ -a lang=fr').options
     expect(options['attributes']).to.have.length(3)
     expect(options['attributes']).to.include('source-highlighter=highlight.js')
     expect(options['attributes']).to.include('icons=font@')
@@ -68,26 +68,22 @@ describe('Options converter', () => {
   })
 
   it('should set the standalone option to false if --embedded option is present', () => {
-    const args = argsParser.parse('one.adoc --embedded')
-    const options = convertOptions(args)
+    const options = defaultOptions.parse('one.adoc --embedded').options
     expect(options['standalone']).to.be.false()
   })
 
   it('should set standalone option to false if -e option is present', () => {
-    const args = argsParser.parse('one.adoc -e')
-    const options = convertOptions(args)
+    const options = defaultOptions.parse('one.adoc -e').options
     expect(options['standalone']).to.be.false()
   })
 
   it('should set standalone option to false if --no-header-footer option is present', () => {
-    const args = argsParser.parse('one.adoc --no-header-footer')
-    const options = convertOptions(args)
+    const options = defaultOptions.parse('one.adoc --no-header-footer').options
     expect(options['standalone']).to.be.false()
   })
 
   it('should set standalone option to false if -s option is present', () => {
-    const args = argsParser.parse('one.adoc -s')
-    const options = convertOptions(args)
+    const options = defaultOptions.parse('one.adoc -s').options
     expect(options['standalone']).to.be.false()
   })
 
@@ -97,26 +93,22 @@ describe('Options converter', () => {
   // ERROR: 3
   // FATAL: 4
   it('should set failure level option to INFO', () => {
-    const args = argsParser.parse('one.adoc --failure-level info')
-    const options = convertOptions(args)
+    const options = defaultOptions.parse('one.adoc --failure-level info').options
     expect(options['failure_level']).to.equal(1)
   })
 
   it('should set failure level option to WARNING', () => {
-    const args = argsParser.parse('one.adoc --failure-level WARNING')
-    const options = convertOptions(args)
+    const options = defaultOptions.parse('one.adoc --failure-level WARNING').options
     expect(options['failure_level']).to.equal(2)
   })
 
   it('should set failure level option to WARN', () => {
-    const args = argsParser.parse('one.adoc --failure-level WARN')
-    const options = convertOptions(args)
+    const options = defaultOptions.parse('one.adoc --failure-level WARN').options
     expect(options['failure_level']).to.equal(2)
   })
 
   it('should set failure level option to ERROR', () => {
-    const args = argsParser.parse('one.adoc --failure-level error')
-    const options = convertOptions(args)
+    const options = defaultOptions.parse('one.adoc --failure-level error').options
     expect(options['failure_level']).to.equal(3)
   })
 })
@@ -126,7 +118,7 @@ describe('Read from stdin', () => {
     sinon.stub(stdin, 'read').yields('An *AsciiDoc* input')
     sinon.stub(processor, 'convert')
     try {
-      run(['/path/to/node', '/path/to/asciidoctor', '-'])
+      new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '-'])).invoke()
       expect(stdin.read.called).to.be.true()
       expect(processor.convert.called).to.be.true()
       const firstArgument = processor.convert.getCall(0).args[0]
@@ -145,7 +137,7 @@ describe('Help', () => {
   it('should show an overview of the AsciiDoc syntax', () => {
     sinon.stub(console, 'log')
     try {
-      run(['/path/to/node', '/path/to/asciidoctor', '--help', 'syntax'])
+      new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '--help', 'syntax'])).invoke()
       expect(console.log.called).to.be.true()
       const asciidocSyntax = console.log.getCall(0).args[0]
       expect(asciidocSyntax).to.includes('thematic break')
@@ -163,7 +155,7 @@ describe('Process files', () => {
   it('should exit with code 1 when failure level is lower than the maximum logging level', () => {
     sinon.stub(process, 'exit')
     try {
-      processFiles([bookFilePath], false, false, { failure_level: 3 }) // ERROR: 3
+      Invoker.processFiles([bookFilePath], false, false, { failure_level: 3 }) // ERROR: 3
       expect(process.exit.called).to.be.true()
       expect(process.exit.calledWith(1)).to.be.true()
     } finally {
@@ -174,7 +166,7 @@ describe('Process files', () => {
   it('should exit with code 0 when failure level is lower than the maximum logging level', () => {
     sinon.stub(process, 'exit')
     try {
-      processFiles([bookFilePath], false, false, { failure_level: 4 }) // FATAL: 4
+      Invoker.processFiles([bookFilePath], false, false, { failure_level: 4 }) // FATAL: 4
       expect(process.exit.called).to.be.true()
       expect(process.exit.calledWith(0)).to.be.true()
     } finally {
@@ -188,7 +180,7 @@ describe('Require option', () => {
     const asciidoctor = require('@asciidoctor/core')()
     try {
       expect(Object.keys(asciidoctor.Extensions.getGroups()).length).to.equal(0)
-      prepareProcessor(argsParser.parse('one.adoc -r ./test/fixtures/shout-ext.js'), asciidoctor)
+      Invoker.prepareProcessor(argsParser.parse('one.adoc -r ./test/fixtures/shout-ext.js'), asciidoctor)
       expect(Object.keys(asciidoctor.Extensions.getGroups()).length).to.equal(1)
     } finally {
       asciidoctor.Extensions.unregisterAll()
@@ -203,7 +195,7 @@ describe('Require option', () => {
     } catch (e) {
       expect(e.message).to.equal('asciidoctor: FAILED: missing converter for backend \'blog\'. Processing aborted.')
     }
-    prepareProcessor(argsParser.parse('one.adoc -r ./test/fixtures/blog-converter.js'), asciidoctor)
+    Invoker.prepareProcessor(argsParser.parse('one.adoc -r ./test/fixtures/blog-converter.js'), asciidoctor)
     const html = asciidoctor.convert('Hello', { backend: 'blog' })
     expect(html).to.equal('<blog></blog>')
   })
@@ -228,5 +220,74 @@ describe('Array option', () => {
     expect(result['require']).to.have.length(2)
     expect(result['require']).to.include('./ext.js')
     expect(result['require']).to.include('@asciidoctor/reveal.js-converter')
+  })
+})
+
+describe('Options', () => {
+  it('should create options', () => {
+    const opts = new Options({}).parse('node asciidoctor -a foo=bar -b html5')
+    expect(opts.options.backend).to.equal('html5')
+    expect(opts.options.attributes).to.include('foo=bar')
+  })
+  it('should create options with a default backend', () => {
+    const opts = new Options({ backend: 'pdf' }).parse('node asciidoctor -a foo=bar')
+    expect(opts.options.backend).to.equal('pdf')
+    expect(opts.options.attributes).to.include('foo=bar')
+  })
+  it('should create options with a default backend overridden by a command line argument', () => {
+    const opts = new Options({ backend: 'pdf' }).parse('node asciidoctor -a foo=bar -b html5')
+    expect(opts.options.backend).to.equal('html5')
+    expect(opts.options.attributes).to.include('foo=bar')
+  })
+  it('should create options with a default list of attributes', () => {
+    const opts = new Options({ attributes: { foo: 'baz', nofooter: true } }).parse('node asciidoctor -a foo=bar -b html5')
+    expect(opts.options.backend).to.equal('html5')
+    const attributes = opts.options.attributes
+    expect(attributes).to.include('foo=bar')
+    expect(attributes).to.include('nofooter=true')
+    expect(attributes).to.include('foo=baz')
+  })
+  it('should create options with a default list of attributes', () => {
+    const opts = new Options({ attributes: { foo: 'baz', nofooter: true } }).parse('node asciidoctor -a foo=bar -b html5')
+    expect(opts.options.backend).to.equal('html5')
+    const attributes = opts.options.attributes
+    expect(attributes).to.include('foo=bar')
+    expect(attributes).to.include('nofooter=true')
+    expect(attributes).to.include('foo=baz')
+  })
+})
+
+describe('Extend', () => {
+  it('should not recognize an unknown option', () => {
+    const opts = new Options({}).parse('node asciidoctor -a foo=bar -b html5')
+    expect(opts.args['watch']).to.be.undefined()
+    expect(opts.options.backend).to.equal('html5')
+    expect(opts.options.attributes).to.include('foo=bar')
+  })
+  it('should add option to the command (default value)', () => {
+    const opts = new Options({})
+      .addOption('watch', {
+        alias: 'w',
+        default: false,
+        describe: 'enable watch mode',
+        type: 'boolean'
+      })
+      .parse('node asciidoctor -a foo=bar -b html5')
+    expect(opts.args['watch']).to.equal(false)
+    expect(opts.options.backend).to.equal('html5')
+    expect(opts.options.attributes).to.include('foo=bar')
+  })
+  it('should add option to the command', () => {
+    const opts = new Options({})
+      .addOption('watch', {
+        alias: 'w',
+        default: false,
+        describe: 'enable watch mode',
+        type: 'boolean'
+      })
+      .parse('node asciidoctor -a foo=bar -b html5 --watch')
+    expect(opts.args['watch']).to.equal(true)
+    expect(opts.options.backend).to.equal('html5')
+    expect(opts.options.attributes).to.include('foo=bar')
   })
 })

@@ -3,5 +3,7 @@
 'use strict'
 
 process.title = 'asciidoctor'
-const cli = require('../lib/cli.js')
-cli.run(process.argv)
+const { Options, Invoker } = require('../lib/cli.js')
+
+const options = new Options().parse(process.argv)
+new Invoker(options).invoke()
