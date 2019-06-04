@@ -136,14 +136,40 @@ describe('Read from stdin', () => {
 describe('Help', () => {
   it('should show an overview of the AsciiDoc syntax', () => {
     sinon.stub(console, 'log')
+    sinon.stub(process, 'exit')
     try {
       new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '--help', 'syntax'])).invoke()
+      expect(process.exit.called).to.be.true()
+      expect(process.exit.calledWith(0)).to.be.true()
       expect(console.log.called).to.be.true()
       const asciidocSyntax = console.log.getCall(0).args[0]
       expect(asciidocSyntax).to.includes('thematic break')
       expect(asciidocSyntax).to.includes('admonition')
     } finally {
       console.log.restore()
+      process.exit.restore()
+    }
+  })
+})
+
+describe('Version', () => {
+  it('should print version if -v is specified as sole argument', () => {
+    sinon.stub(console, 'log')
+    sinon.stub(process, 'exit')
+    try {
+      new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '-v'])).invoke()
+      expect(process.exit.called).to.be.true()
+      expect(process.exit.calledWith(0)).to.be.true()
+      expect(console.log.called).to.be.true()
+      const version = console.log.getCall(0).args[0]
+      expect(version).to.include('Asciidoctor.js')
+      expect(version).to.include('Runtime Environment')
+      expect(version).to.include('CLI version')
+      expect(version).to.not.include('options {')
+      expect(version).to.not.include('destination-dir')
+    } finally {
+      console.log.restore()
+      process.exit.restore()
     }
   })
 })
