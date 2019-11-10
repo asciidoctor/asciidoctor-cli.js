@@ -48,7 +48,7 @@ describe('Options converter', () => {
   it('should have default options', () => {
     const options = defaultOptions.parse('').options
     expect(options['backend']).to.equal('html5')
-    expect(options['doctype']).to.equal('article')
+    expect(options['doctype']).to.be.undefined()
     expect(options['safe']).to.equal('unsafe')
     expect(options['standalone']).to.be.true()
     expect(options['verbose']).to.equal(1)
@@ -315,5 +315,16 @@ describe('Extend', () => {
     expect(opts.args['watch']).to.equal(true)
     expect(opts.options.backend).to.equal('html5')
     expect(opts.options.attributes).to.include('foo=bar')
+  })
+})
+
+describe('Convert', () => {
+  it('should convert', () => {
+    const options = new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/doctype.adoc`, '-s'])
+    const asciidoctor = require('@asciidoctor/core')()
+    let asciidoctorOptions = options.options
+    Object.assign(asciidoctorOptions, { to_file: false })
+    const result = asciidoctor.convertFile(`${__dirname}/fixtures/doctype.adoc`, asciidoctorOptions)
+    expect(result).to.have.string('<p>book</p>')
   })
 })

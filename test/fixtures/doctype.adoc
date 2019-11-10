@@ -1,0 +1,4 @@
+= Title
+:doctype: book
+
+{doctype}
