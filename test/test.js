@@ -172,6 +172,32 @@ describe('Version', () => {
       process.exit.restore()
     }
   })
+
+  it('should print a custom version if -v is specified as sole argument', () => {
+    sinon.stub(console, 'log')
+    sinon.stub(process, 'exit')
+    try {
+      class CustomInvoker extends Invoker {
+        version () {
+          return `Asciidoctor reveal.js 3.0.1 using ${super.version()}`
+        }
+      }
+      new CustomInvoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '-v'])).invoke()
+      expect(process.exit.called).to.be.true()
+      expect(process.exit.calledWith(0)).to.be.true()
+      expect(console.log.called).to.be.true()
+      const version = console.log.getCall(0).args[0]
+      expect(version).to.include('reveal.js 3.0.1')
+      expect(version).to.include('Asciidoctor.js')
+      expect(version).to.include('Runtime Environment')
+      expect(version).to.include('CLI version')
+      expect(version).to.not.include('options {')
+      expect(version).to.not.include('destination-dir')
+    } finally {
+      console.log.restore()
+      process.exit.restore()
+    }
+  })
 })
 
 describe('Process files', () => {
