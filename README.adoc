@@ -1,7 +1,7 @@
 = Asciidoctor.js CLI
 
 ifdef::env-github[]
-image:https://img.shields.io/travis/asciidoctor/asciidoctor-cli.js/master.svg[Travis build status, link=https://travis-ci.org/asciidoctor/asciidoctor-cli.js]
+image:https://github.com/asciidoctor/asciidoctor-cli.js/workflows/Build/badge.svg[GitHub Actions Status, link=https://github.com/asciidoctor/asciidoctor-cli.js/actions]
 image:https://img.shields.io/npm/v/@asciidoctor/cli.svg[npm version, link=https://www.npmjs.org/package/@asciidoctor/cli]
 endif::[]
 
