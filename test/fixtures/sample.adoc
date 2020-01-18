@@ -1,0 +1,7 @@
+= Title
+
+This is a sample document
+
+== First section
+
+This is a paragraph.
