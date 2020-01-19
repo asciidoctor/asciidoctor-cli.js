@@ -47,7 +47,7 @@ describe('Arguments parser', () => {
 describe('Options converter', () => {
   it('should have default options', () => {
     const options = defaultOptions.parse('').options
-    expect(options['backend']).to.equal('html5')
+    expect(options['backend']).to.be.undefined()
     expect(options['doctype']).to.be.undefined()
     expect(options['safe']).to.equal('unsafe')
     expect(options['standalone']).to.be.true()
@@ -124,7 +124,6 @@ describe('Read from stdin', () => {
       const firstArgument = processor.convert.getCall(0).args[0]
       const secondArgument = processor.convert.getCall(0).args[1]
       expect(firstArgument).to.equal('An *AsciiDoc* input')
-      expect(secondArgument.backend).to.equal('html5')
       expect(secondArgument.to_file).to.equal(Opal.gvars.stdout)
     } finally {
       stdin.read.restore()
@@ -345,12 +344,36 @@ describe('Extend', () => {
 })
 
 describe('Convert', () => {
-  it('should convert', () => {
+  it('should convert using a custom doctype (defined as document attribute)', () => {
     const options = new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/doctype.adoc`, '-s'])
     const asciidoctor = require('@asciidoctor/core')()
     let asciidoctorOptions = options.options
     Object.assign(asciidoctorOptions, { to_file: false })
     const result = asciidoctor.convertFile(`${__dirname}/fixtures/doctype.adoc`, asciidoctorOptions)
     expect(result).to.have.string('<p>book</p>')
+  })
+
+  it('should convert using the default backend (html5)', () => {
+    const asciidoctor = require('@asciidoctor/core')()
+    const options = new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/sample.adoc`, '-s'])
+    let asciidoctorOptions = options.options
+    Object.assign(asciidoctorOptions, { to_file: false })
+    Invoker.prepareProcessor(argsParser.parse(`${__dirname}/fixtures/sample.adoc`), asciidoctor)
+    const html = asciidoctor.convertFile(`${__dirname}/fixtures/sample.adoc`, asciidoctorOptions)
+    expect(html).to.include(`<div class="sectionbody">
+<div class="paragraph">
+<p>This is a paragraph.</p>
+</div>
+</div>`)
+  })
+
+  it('should convert using a custom backend (defined as document attribute)', () => {
+    const asciidoctor = require('@asciidoctor/core')()
+    const options = new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/backend.adoc`, '-s'])
+    let asciidoctorOptions = options.options
+    Object.assign(asciidoctorOptions, { to_file: false })
+    Invoker.prepareProcessor(argsParser.parse('one.adoc -r ./test/fixtures/revealjs-converter.js'), asciidoctor)
+    const html = asciidoctor.convertFile(`${__dirname}/fixtures/backend.adoc`, asciidoctorOptions)
+    expect(html).to.equal('<revealjs><p>revealjs</p></revealjs>')
   })
 })
