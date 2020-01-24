@@ -114,11 +114,11 @@ describe('Options converter', () => {
 })
 
 describe('Read from stdin', () => {
-  it('should read from stdin', () => {
-    sinon.stub(stdin, 'read').yields('An *AsciiDoc* input')
+  it('should read from stdin', async () => {
+    sinon.stub(stdin, 'read').resolves('An *AsciiDoc* input')
     sinon.stub(processor, 'convert')
     try {
-      new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '-'])).invoke()
+      await new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '-'])).invoke()
       expect(stdin.read.called).to.be.true()
       expect(processor.convert.called).to.be.true()
       const firstArgument = processor.convert.getCall(0).args[0]
