@@ -151,6 +151,24 @@ describe('Help', () => {
   })
 })
 
+describe('Print timings report', () => {
+  it('should print timings report', () => {
+    sinon.stub(process.stderr, 'write')
+    sinon.stub(process, 'exit')
+    try {
+      new Invoker(new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/sample.adoc`, '--timings', '-o', '-'])).invoke()
+      expect(process.stderr.write.called).to.be.true()
+      expect(process.stderr.write.getCall(0).args[0]).to.equal(`Input file: ${__dirname}/fixtures/sample.adoc`)
+      expect(process.stderr.write.getCall(1).args[0]).to.include('Time to read and parse source:')
+      expect(process.stderr.write.getCall(2).args[0]).to.include('Time to convert document:')
+      expect(process.stderr.write.getCall(3).args[0]).to.include('Total time (read, parse and convert):')
+    } finally {
+      process.stderr.write.restore()
+      process.exit.restore()
+    }
+  })
+})
+
 describe('Version', () => {
   it('should print version if -v is specified as sole argument', () => {
     sinon.stub(console, 'log')
