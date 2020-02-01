@@ -117,6 +117,7 @@ describe('Read from stdin', () => {
   it('should read from stdin', async () => {
     sinon.stub(stdin, 'read').resolves('An *AsciiDoc* input')
     sinon.stub(processor, 'convert')
+    sinon.stub(process, 'exit')
     try {
       await new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '-'])).invoke()
       expect(stdin.read.called).to.be.true()
@@ -128,6 +129,7 @@ describe('Read from stdin', () => {
     } finally {
       stdin.read.restore()
       processor.convert.restore()
+      process.exit.restore()
     }
   })
 })
@@ -206,7 +208,8 @@ describe('Process files', () => {
   it('should exit with code 1 when failure level is lower than the maximum logging level', () => {
     sinon.stub(process, 'exit')
     try {
-      Invoker.processFiles([bookFilePath], false, false, { failure_level: 3 }) // ERROR: 3
+      Invoker.convertFiles([bookFilePath], false, false, { failure_level: 3 }) // ERROR: 3
+      Invoker.exit(3)
       expect(process.exit.called).to.be.true()
       expect(process.exit.calledWith(1)).to.be.true()
     } finally {
@@ -217,7 +220,8 @@ describe('Process files', () => {
   it('should exit with code 0 when failure level is lower than the maximum logging level', () => {
     sinon.stub(process, 'exit')
     try {
-      Invoker.processFiles([bookFilePath], false, false, { failure_level: 4 }) // FATAL: 4
+      Invoker.convertFiles([bookFilePath], false, false, { failure_level: 4 }) // FATAL: 4
+      Invoker.exit(4)
       expect(process.exit.called).to.be.true()
       expect(process.exit.calledWith(0)).to.be.true()
     } finally {
