@@ -156,6 +156,7 @@ describe('Help', () => {
 describe('Print timings report', () => {
   it('should print timings report', () => {
     sinon.stub(process.stderr, 'write')
+    sinon.stub(process.stdout, 'write')
     sinon.stub(process, 'exit')
     try {
       new Invoker(new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/sample.adoc`, '--timings', '-o', '-'])).invoke()
@@ -166,6 +167,43 @@ describe('Print timings report', () => {
       expect(process.stderr.write.getCall(3).args[0]).to.include('Total time (read, parse and convert):')
     } finally {
       process.stderr.write.restore()
+      process.stdout.write.restore()
+      process.exit.restore()
+    }
+  })
+})
+
+describe('Write to stdout', () => {
+  it('should write to stdout', () => {
+    sinon.stub(process.stdout, 'write')
+    sinon.stub(process, 'exit')
+    try {
+      new Invoker(new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/sample.adoc`, '-a', 'nofooter', '-o', '-'])).invoke()
+      expect(process.stdout.write.called).to.be.true()
+      expect(process.stdout.write.getCall(0).args[0]).to.include(`<body class="article">
+<div id="header">
+<h1>Title</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is a sample document</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_first_section">First section</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is a paragraph.</p>
+</div>
+</div>
+</div>
+</div>
+</body>`)
+    } finally {
+      process.stdout.write.restore()
       process.exit.restore()
     }
   })
@@ -227,7 +265,7 @@ describe('Process files', () => {
   it('should exit with code 1 when failure level is lower than the maximum logging level', () => {
     sinon.stub(process, 'exit')
     try {
-      Invoker.processFiles([bookFilePath], false, false)
+      Invoker.convertFiles([bookFilePath], false, false)
       Invoker.exit(3) // ERROR: 3
       expect(process.exit.called).to.be.true()
       expect(process.exit.calledWith(1)).to.be.true()
@@ -239,7 +277,7 @@ describe('Process files', () => {
   it('should exit with code 0 when failure level is lower than the maximum logging level', () => {
     sinon.stub(process, 'exit')
     try {
-      Invoker.processFiles([bookFilePath], false, false)
+      Invoker.convertFiles([bookFilePath], false, false)
       Invoker.exit(4) // FATAL: 4
       expect(process.exit.called).to.be.true()
       expect(process.exit.calledWith(0)).to.be.true()
