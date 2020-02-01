@@ -114,11 +114,12 @@ describe('Options converter', () => {
 })
 
 describe('Read from stdin', () => {
-  it('should read from stdin', () => {
-    sinon.stub(stdin, 'read').yields('An *AsciiDoc* input')
+  it('should read from stdin', async () => {
+    sinon.stub(stdin, 'read').resolves('An *AsciiDoc* input')
     sinon.stub(processor, 'convert')
+    sinon.stub(process, 'exit')
     try {
-      new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '-'])).invoke()
+      await new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '-'])).invoke()
       expect(stdin.read.called).to.be.true()
       expect(processor.convert.called).to.be.true()
       const firstArgument = processor.convert.getCall(0).args[0]
@@ -128,6 +129,7 @@ describe('Read from stdin', () => {
     } finally {
       stdin.read.restore()
       processor.convert.restore()
+      process.exit.restore()
     }
   })
 })
@@ -199,6 +201,7 @@ describe('Version', () => {
           return `Asciidoctor reveal.js 3.0.1 using ${super.version()}`
         }
       }
+
       new CustomInvoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '-v'])).invoke()
       expect(process.exit.called).to.be.true()
       expect(process.exit.calledWith(0)).to.be.true()
@@ -224,7 +227,8 @@ describe('Process files', () => {
   it('should exit with code 1 when failure level is lower than the maximum logging level', () => {
     sinon.stub(process, 'exit')
     try {
-      Invoker.processFiles([bookFilePath], false, false, { failure_level: 3 }) // ERROR: 3
+      Invoker.processFiles([bookFilePath], false, false)
+      Invoker.exit(3) // ERROR: 3
       expect(process.exit.called).to.be.true()
       expect(process.exit.calledWith(1)).to.be.true()
     } finally {
@@ -235,7 +239,8 @@ describe('Process files', () => {
   it('should exit with code 0 when failure level is lower than the maximum logging level', () => {
     sinon.stub(process, 'exit')
     try {
-      Invoker.processFiles([bookFilePath], false, false, { failure_level: 4 }) // FATAL: 4
+      Invoker.processFiles([bookFilePath], false, false)
+      Invoker.exit(4) // FATAL: 4
       expect(process.exit.called).to.be.true()
       expect(process.exit.calledWith(0)).to.be.true()
     } finally {
