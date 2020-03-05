@@ -134,6 +134,35 @@ describe('Read from stdin', () => {
   })
 })
 
+describe('Write to stdout', () => {
+  function itShouldWriteToStdout (args) {
+    sinon.stub(process.stdout, 'write')
+    sinon.stub(process, 'exit')
+    try {
+      new Invoker(new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/sample.adoc`, ...args])).invoke()
+      expect(process.stdout.write.called).to.be.true()
+      const output = process.stdout.write.getCall(0).args[0]
+      expect(output).to.includes(`<!DOCTYPE html>`)
+      expect(output).to.includes(`<h1>Title</h1>`)
+    } finally {
+      process.stdout.write.restore()
+      process.exit.restore()
+    }
+  }
+  it('should write to stdout with -o -', () => {
+    itShouldWriteToStdout(['-o', '-'])
+  })
+  it('should write to stdout with -o \'\'', () => {
+    itShouldWriteToStdout(['-o', '\'\''])
+  })
+  it('should write to stdout with --out-file -', () => {
+    itShouldWriteToStdout(['--out-file', '-'])
+  })
+  it('should write to stdout with --out-file \'\'', () => {
+    itShouldWriteToStdout(['--out-file', '\'\''])
+  })
+})
+
 describe('Help', () => {
   it('should show an overview of the AsciiDoc syntax', () => {
     sinon.stub(console, 'log')
@@ -155,6 +184,7 @@ describe('Help', () => {
 
 describe('Print timings report', () => {
   it('should print timings report', () => {
+    sinon.stub(process.stdout, 'write')
     sinon.stub(process.stderr, 'write')
     sinon.stub(process, 'exit')
     try {
@@ -165,6 +195,7 @@ describe('Print timings report', () => {
       expect(process.stderr.write.getCall(2).args[0]).to.include('Time to convert document:')
       expect(process.stderr.write.getCall(3).args[0]).to.include('Total time (read, parse and convert):')
     } finally {
+      process.stderr.write.restore()
       process.stderr.write.restore()
       process.exit.restore()
     }
