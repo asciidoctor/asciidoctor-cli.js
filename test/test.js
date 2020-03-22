@@ -14,77 +14,77 @@ const argsParser = defaultOptions.argsParser()
 describe('Arguments parser', () => {
   it('should parse a command with a single file', () => {
     const result = argsParser.parse('file.adoc')
-    expect(result['files']).to.have.length(1)
-    expect(result['files']).to.include('file.adoc')
-    expect(result['verbose']).to.be.false() // default value
+    expect(result.files).to.have.length(1)
+    expect(result.files).to.include('file.adoc')
+    expect(result.verbose).to.be.false() // default value
   })
 
   it('should parse a command with the verbose attribute', () => {
     const result = argsParser.parse('file.adoc --verbose')
-    expect(result['files']).to.have.length(1)
-    expect(result['files']).to.include('file.adoc')
-    expect(result['verbose']).to.be.true()
+    expect(result.files).to.have.length(1)
+    expect(result.files).to.include('file.adoc')
+    expect(result.verbose).to.be.true()
   })
 
   it('should parse a command with multiple files', () => {
     const result = argsParser.parse('one.adoc two.adoc')
-    expect(result['files']).to.have.length(2)
-    expect(result['files']).to.include('one.adoc')
-    expect(result['files']).to.include('two.adoc')
+    expect(result.files).to.have.length(2)
+    expect(result.files).to.include('one.adoc')
+    expect(result.files).to.include('two.adoc')
   })
 
   it('should parse a command with multiple attributes', () => {
     const result = argsParser.parse('one.adoc -a source-highlighter=highlight.js --attribute icons=font@ -a lang=fr')
-    expect(result['files']).to.have.length(1)
-    expect(result['files']).to.include('one.adoc')
-    expect(result['attribute']).to.have.length(3)
-    expect(result['attribute']).to.include('source-highlighter=highlight.js')
-    expect(result['attribute']).to.include('icons=font@')
-    expect(result['attribute']).to.include('lang=fr')
+    expect(result.files).to.have.length(1)
+    expect(result.files).to.include('one.adoc')
+    expect(result.attribute).to.have.length(3)
+    expect(result.attribute).to.include('source-highlighter=highlight.js')
+    expect(result.attribute).to.include('icons=font@')
+    expect(result.attribute).to.include('lang=fr')
   })
 })
 
 describe('Options converter', () => {
   it('should have default options', () => {
     const options = defaultOptions.parse('').options
-    expect(options['backend']).to.be.undefined()
-    expect(options['doctype']).to.be.undefined()
-    expect(options['safe']).to.equal('unsafe')
-    expect(options['standalone']).to.be.true()
-    expect(options['verbose']).to.equal(1)
-    expect(options['timings']).to.be.false()
-    expect(options['trace']).to.be.false()
-    expect(options['mkdirs']).to.be.true()
-    expect(options['attributes']).to.be.empty()
-    expect(options['failure_level']).to.equal(4)
+    expect(options.backend).to.be.undefined()
+    expect(options.doctype).to.be.undefined()
+    expect(options.safe).to.equal('unsafe')
+    expect(options.standalone).to.be.true()
+    expect(options.verbose).to.equal(1)
+    expect(options.timings).to.be.false()
+    expect(options.trace).to.be.false()
+    expect(options.mkdirs).to.be.true()
+    expect(options.attributes).to.be.empty()
+    expect(options.failure_level).to.equal(4)
   })
 
   it('should set the attributes option', () => {
     const options = defaultOptions.parse('one.adoc -a source-highlighter=highlight.js --attribute icons=font@ -a lang=fr').options
-    expect(options['attributes']).to.have.length(3)
-    expect(options['attributes']).to.include('source-highlighter=highlight.js')
-    expect(options['attributes']).to.include('icons=font@')
-    expect(options['attributes']).to.include('lang=fr')
+    expect(options.attributes).to.have.length(3)
+    expect(options.attributes).to.include('source-highlighter=highlight.js')
+    expect(options.attributes).to.include('icons=font@')
+    expect(options.attributes).to.include('lang=fr')
   })
 
   it('should set the standalone option to false if --embedded option is present', () => {
     const options = defaultOptions.parse('one.adoc --embedded').options
-    expect(options['standalone']).to.be.false()
+    expect(options.standalone).to.be.false()
   })
 
   it('should set standalone option to false if -e option is present', () => {
     const options = defaultOptions.parse('one.adoc -e').options
-    expect(options['standalone']).to.be.false()
+    expect(options.standalone).to.be.false()
   })
 
   it('should set standalone option to false if --no-header-footer option is present', () => {
     const options = defaultOptions.parse('one.adoc --no-header-footer').options
-    expect(options['standalone']).to.be.false()
+    expect(options.standalone).to.be.false()
   })
 
   it('should set standalone option to false if -s option is present', () => {
     const options = defaultOptions.parse('one.adoc -s').options
-    expect(options['standalone']).to.be.false()
+    expect(options.standalone).to.be.false()
   })
 
   // DEBUG: 0
@@ -94,22 +94,22 @@ describe('Options converter', () => {
   // FATAL: 4
   it('should set failure level option to INFO', () => {
     const options = defaultOptions.parse('one.adoc --failure-level info').options
-    expect(options['failure_level']).to.equal(1)
+    expect(options.failure_level).to.equal(1)
   })
 
   it('should set failure level option to WARNING', () => {
     const options = defaultOptions.parse('one.adoc --failure-level WARNING').options
-    expect(options['failure_level']).to.equal(2)
+    expect(options.failure_level).to.equal(2)
   })
 
   it('should set failure level option to WARN', () => {
     const options = defaultOptions.parse('one.adoc --failure-level WARN').options
-    expect(options['failure_level']).to.equal(2)
+    expect(options.failure_level).to.equal(2)
   })
 
   it('should set failure level option to ERROR', () => {
     const options = defaultOptions.parse('one.adoc --failure-level error').options
-    expect(options['failure_level']).to.equal(3)
+    expect(options.failure_level).to.equal(3)
   })
 })
 
@@ -142,8 +142,8 @@ describe('Write to stdout', () => {
       new Invoker(new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/sample.adoc`, ...args])).invoke()
       expect(process.stdout.write.called).to.be.true()
       const output = process.stdout.write.getCall(0).args[0]
-      expect(output).to.includes(`<!DOCTYPE html>`)
-      expect(output).to.includes(`<h1>Title</h1>`)
+      expect(output).to.includes('<!DOCTYPE html>')
+      expect(output).to.includes('<h1>Title</h1>')
     } finally {
       process.stdout.write.restore()
       process.exit.restore()
@@ -309,22 +309,22 @@ describe('Require option', () => {
 describe('Array option', () => {
   it('should parse a command with a list of attributes just before a positional argument', () => {
     const result = argsParser.parse('-a foo=bar -a baz=quz file.adoc')
-    expect(result['files']).to.have.length(1)
-    expect(result['files']).to.include('file.adoc')
-    expect(result['attribute']).to.have.length(2)
-    expect(result['attribute']).to.include('foo=bar')
-    expect(result['attribute']).to.include('baz=quz')
+    expect(result.files).to.have.length(1)
+    expect(result.files).to.include('file.adoc')
+    expect(result.attribute).to.have.length(2)
+    expect(result.attribute).to.include('foo=bar')
+    expect(result.attribute).to.include('baz=quz')
   })
   it('should parse a command with a list of attributes and requires just before a positional argument', () => {
     const result = argsParser.parse('--attribute foo=bar -a baz=quz -r ./ext.js --require @asciidoctor/reveal.js-converter file.adoc')
-    expect(result['files']).to.have.length(1)
-    expect(result['files']).to.include('file.adoc')
-    expect(result['attribute']).to.have.length(2)
-    expect(result['attribute']).to.include('foo=bar')
-    expect(result['attribute']).to.include('baz=quz')
-    expect(result['require']).to.have.length(2)
-    expect(result['require']).to.include('./ext.js')
-    expect(result['require']).to.include('@asciidoctor/reveal.js-converter')
+    expect(result.files).to.have.length(1)
+    expect(result.files).to.include('file.adoc')
+    expect(result.attribute).to.have.length(2)
+    expect(result.attribute).to.include('foo=bar')
+    expect(result.attribute).to.include('baz=quz')
+    expect(result.require).to.have.length(2)
+    expect(result.require).to.include('./ext.js')
+    expect(result.require).to.include('@asciidoctor/reveal.js-converter')
   })
 })
 
@@ -365,7 +365,7 @@ describe('Options', () => {
 describe('Extend', () => {
   it('should not recognize an unknown option', () => {
     const opts = new Options({}).parse('node asciidoctor -a foo=bar -b html5')
-    expect(opts.args['watch']).to.be.undefined()
+    expect(opts.args.watch).to.be.undefined()
     expect(opts.options.backend).to.equal('html5')
     expect(opts.options.attributes).to.include('foo=bar')
   })
@@ -378,7 +378,7 @@ describe('Extend', () => {
         type: 'boolean'
       })
       .parse('node asciidoctor -a foo=bar -b html5')
-    expect(opts.args['watch']).to.equal(false)
+    expect(opts.args.watch).to.equal(false)
     expect(opts.options.backend).to.equal('html5')
     expect(opts.options.attributes).to.include('foo=bar')
   })
@@ -391,7 +391,7 @@ describe('Extend', () => {
         type: 'boolean'
       })
       .parse('node asciidoctor -a foo=bar -b html5 --watch')
-    expect(opts.args['watch']).to.equal(true)
+    expect(opts.args.watch).to.equal(true)
     expect(opts.options.backend).to.equal('html5')
     expect(opts.options.attributes).to.include('foo=bar')
   })
@@ -401,7 +401,7 @@ describe('Convert', () => {
   it('should convert using a custom doctype (defined as document attribute)', () => {
     const options = new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/doctype.adoc`, '-s'])
     const asciidoctor = require('@asciidoctor/core')()
-    let asciidoctorOptions = options.options
+    const asciidoctorOptions = options.options
     Object.assign(asciidoctorOptions, { to_file: false })
     const result = asciidoctor.convertFile(`${__dirname}/fixtures/doctype.adoc`, asciidoctorOptions)
     expect(result).to.have.string('<p>book</p>')
@@ -410,7 +410,7 @@ describe('Convert', () => {
   it('should convert using the default backend (html5)', () => {
     const asciidoctor = require('@asciidoctor/core')()
     const options = new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/sample.adoc`, '-s'])
-    let asciidoctorOptions = options.options
+    const asciidoctorOptions = options.options
     Object.assign(asciidoctorOptions, { to_file: false })
     Invoker.prepareProcessor(argsParser.parse(`${__dirname}/fixtures/sample.adoc`), asciidoctor)
     const html = asciidoctor.convertFile(`${__dirname}/fixtures/sample.adoc`, asciidoctorOptions)
@@ -424,7 +424,7 @@ describe('Convert', () => {
   it('should convert using a custom backend (defined as document attribute)', () => {
     const asciidoctor = require('@asciidoctor/core')()
     const options = new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/backend.adoc`, '-s'])
-    let asciidoctorOptions = options.options
+    const asciidoctorOptions = options.options
     Object.assign(asciidoctorOptions, { to_file: false })
     Invoker.prepareProcessor(argsParser.parse('one.adoc -r ./test/fixtures/revealjs-converter.js'), asciidoctor)
     const html = asciidoctor.convertFile(`${__dirname}/fixtures/backend.adoc`, asciidoctorOptions)
