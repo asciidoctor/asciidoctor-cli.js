@@ -195,7 +195,7 @@ describe('Print timings report', () => {
       expect(process.stderr.write.getCall(2).args[0]).to.include('Time to convert document:')
       expect(process.stderr.write.getCall(3).args[0]).to.include('Total time (read, parse and convert):')
     } finally {
-      process.stderr.write.restore()
+      process.stdout.write.restore()
       process.stderr.write.restore()
       process.exit.restore()
     }
