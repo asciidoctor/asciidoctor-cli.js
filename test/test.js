@@ -306,6 +306,31 @@ describe('Require option', () => {
   })
 })
 
+describe('Template directory', () => {
+  it('should parse a command with a single template directory', () => {
+    const result = argsParser.parse('--template-dir /path/to/templates file.adoc')
+    expect(result.files).to.have.length(1)
+    expect(result.files).to.include('file.adoc')
+    expect(result['template-dir']).to.have.length(1)
+    expect(result['template-dir']).to.include('/path/to/templates')
+  })
+
+  it('should parse a command with a multiple template directories', () => {
+    const result = argsParser.parse('--template-dir=/path/to/templates -T /path/to/others file.adoc')
+    expect(result.files).to.have.length(1)
+    expect(result.files).to.include('file.adoc')
+    expect(result['template-dir']).to.have.length(2)
+    expect(result['template-dir']).to.include('/path/to/templates')
+    expect(result['template-dir']).to.include('/path/to/others')
+  })
+  it('should set template_dirs option when --template-dir is defined', () => {
+    const opts = new Options({}).parse('node asciidoctor --template-dir /path/to/templates -b html5 file.adoc')
+    expect(opts.options.backend).to.equal('html5')
+    expect(opts.options.template_dirs).to.have.length(1)
+    expect(opts.options.template_dirs).to.include('/path/to/templates')
+  })
+})
+
 describe('Array option', () => {
   it('should parse a command with a list of attributes just before a positional argument', () => {
     const result = argsParser.parse('-a foo=bar -a baz=quz file.adoc')
