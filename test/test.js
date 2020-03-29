@@ -306,6 +306,29 @@ describe('Require option', () => {
   })
 })
 
+describe('Template engine', () => {
+  it('should parse a command with the --template-engine argument', () => {
+    const result = argsParser.parse('--template-engine=nunjucks -a foo=bar file.adoc')
+    expect(result.files).to.have.length(1)
+    expect(result.files).to.include('file.adoc')
+    expect(result.attribute).to.have.length(1)
+    expect(result.attribute).to.include('foo=bar')
+    expect(result['template-engine']).to.eq('nunjucks')
+  })
+  it('should parse a command with the -E argument', () => {
+    const result = argsParser.parse('-E nunjucks -a foo=bar file.adoc')
+    expect(result.files).to.have.length(1)
+    expect(result.files).to.include('file.adoc')
+    expect(result.attribute).to.have.length(1)
+    expect(result.attribute).to.include('foo=bar')
+    expect(result['template-engine']).to.eq('nunjucks')
+  })
+  it('should set the template_engine option when the -E argument is defined', () => {
+    const opts = new Options({}).parse('node asciidoctor -E pug -b html5 file.adoc')
+    expect(opts.options.backend).to.equal('html5')
+    expect(opts.options.template_engine).to.equal('pug')
+  })
+})
 describe('Array option', () => {
   it('should parse a command with a list of attributes just before a positional argument', () => {
     const result = argsParser.parse('-a foo=bar -a baz=quz file.adoc')
