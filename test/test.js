@@ -139,7 +139,8 @@ describe('Write to stdout', () => {
     sinon.stub(process.stdout, 'write')
     sinon.stub(process, 'exit')
     try {
-      new Invoker(new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/sample.adoc`, ...args])).invoke()
+      const file = path.join(__dirname, 'fixtures', 'sample.adoc')
+      new Invoker(new Options().parse(['node', 'asciidoctor', file, ...args])).invoke()
       expect(process.stdout.write.called).to.be.true()
       const output = process.stdout.write.getCall(0).args[0]
       expect(output).to.includes('<!DOCTYPE html>')
@@ -188,9 +189,10 @@ describe('Print timings report', () => {
     sinon.stub(process.stderr, 'write')
     sinon.stub(process, 'exit')
     try {
-      new Invoker(new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/sample.adoc`, '--timings', '-o', '-'])).invoke()
+      const file = path.join(__dirname, 'fixtures', 'sample.adoc')
+      new Invoker(new Options().parse(['node', 'asciidoctor', file, '--timings', '-o', '-'])).invoke()
       expect(process.stderr.write.called).to.be.true()
-      expect(process.stderr.write.getCall(0).args[0]).to.equal(`Input file: ${__dirname}/fixtures/sample.adoc`)
+      expect(process.stderr.write.getCall(0).args[0]).to.equal(`Input file: ${file}`)
       expect(process.stderr.write.getCall(1).args[0]).to.include('Time to read and parse source:')
       expect(process.stderr.write.getCall(2).args[0]).to.include('Time to convert document:')
       expect(process.stderr.write.getCall(3).args[0]).to.include('Total time (read, parse and convert):')
@@ -447,21 +449,23 @@ describe('Extend', () => {
 
 describe('Convert', () => {
   it('should convert using a custom doctype (defined as document attribute)', () => {
-    const options = new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/doctype.adoc`, '-s'])
+    const file = path.join(__dirname, 'fixtures', 'doctype.adoc')
+    const options = new Options().parse(['node', 'asciidoctor', file, '-s'])
     const asciidoctor = require('@asciidoctor/core')()
     const asciidoctorOptions = options.options
     Object.assign(asciidoctorOptions, { to_file: false })
-    const result = asciidoctor.convertFile(`${__dirname}/fixtures/doctype.adoc`, asciidoctorOptions)
+    const result = asciidoctor.convertFile(file, asciidoctorOptions)
     expect(result).to.have.string('<p>book</p>')
   })
 
   it('should convert using the default backend (html5)', () => {
     const asciidoctor = require('@asciidoctor/core')()
-    const options = new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/sample.adoc`, '-s'])
+    const file = path.join(__dirname, 'fixtures', 'sample.adoc')
+    const options = new Options().parse(['node', 'asciidoctor', file, '-s'])
     const asciidoctorOptions = options.options
     Object.assign(asciidoctorOptions, { to_file: false })
-    Invoker.prepareProcessor(argsParser.parse(`${__dirname}/fixtures/sample.adoc`), asciidoctor)
-    const html = asciidoctor.convertFile(`${__dirname}/fixtures/sample.adoc`, asciidoctorOptions)
+    Invoker.prepareProcessor(argsParser.parse(file), asciidoctor)
+    const html = asciidoctor.convertFile(file, asciidoctorOptions)
     expect(html).to.include(`<div class="sectionbody">
 <div class="paragraph">
 <p>This is a paragraph.</p>
@@ -471,11 +475,12 @@ describe('Convert', () => {
 
   it('should convert using a custom backend (defined as document attribute)', () => {
     const asciidoctor = require('@asciidoctor/core')()
-    const options = new Options().parse(['node', 'asciidoctor', `${__dirname}/fixtures/backend.adoc`, '-s'])
+    const file = path.join(__dirname, 'fixtures', 'backend.adoc')
+    const options = new Options().parse(['node', 'asciidoctor', file, '-s'])
     const asciidoctorOptions = options.options
     Object.assign(asciidoctorOptions, { to_file: false })
     Invoker.prepareProcessor(argsParser.parse('one.adoc -r ./test/fixtures/revealjs-converter.js'), asciidoctor)
-    const html = asciidoctor.convertFile(`${__dirname}/fixtures/backend.adoc`, asciidoctorOptions)
+    const html = asciidoctor.convertFile(file, asciidoctorOptions)
     expect(html).to.equal('<revealjs><p>revealjs</p></revealjs>')
   })
 })
