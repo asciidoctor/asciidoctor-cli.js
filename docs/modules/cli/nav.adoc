@@ -1,3 +1,4 @@
 * xref:cli:index.adoc[CLI References]
 ** xref:cli:install.adoc[Install guide]
 ** xref:cli:quick-tour.adoc[A quick tour]
+** xref:cli:options.adoc[CLI Options]
