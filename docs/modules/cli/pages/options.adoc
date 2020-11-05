@@ -83,7 +83,7 @@ For instance, if you want to use Nunjucks, you will need to install the nunjucks
 This option may be specified more than once.
 Matching templates found in subsequent directories override ones previously discovered.
 +
-Learn more about the xref:extend:template-converter.adoc[Template Converter].
+Learn more about the xref:extend:converter/template-converter.adoc[Template Converter].
 
 == Processing information
 
