@@ -1,3 +1,3 @@
-* xref:cli:index.adoc[Asciidoctor.js CLI]
+* xref:cli:index.adoc[CLI References]
 ** xref:cli:install.adoc[Install guide]
 ** xref:cli:quick-tour.adoc[A quick tour]
