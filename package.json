@@ -57,7 +57,7 @@
     "dirty-chai": "^2.0.1",
     "mocha": "8.2.0",
     "sinon": "^8.1.1",
-    "standard": "15.0.1"
+    "standard": "16.0.2"
   },
   "peerDependencies": {
     "@asciidoctor/core": "^2.0.0-rc.1"
