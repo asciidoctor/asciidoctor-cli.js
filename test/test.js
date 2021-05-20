@@ -181,6 +181,40 @@ describe('Help', () => {
       process.exit.restore()
     }
   })
+
+  it('should show --help option on command usage', () => {
+    sinon.stub(console, 'error')
+    sinon.stub(process, 'exit')
+    try {
+      new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '--help'])).invoke()
+      expect(process.exit.called).to.be.true()
+      expect(process.exit.calledWith(0)).to.be.true()
+      expect(console.error.called).to.be.true()
+      const usage = console.error.getCall(0).args[0]
+      expect(usage).to.includes('--help')
+      expect(usage).to.includes('show an overview of the AsciiDoc syntax if TOPIC is syntax')
+    } finally {
+      console.error.restore()
+      process.exit.restore()
+    }
+  })
+
+  it('should show --version option on command usage', () => {
+    sinon.stub(console, 'error')
+    sinon.stub(process, 'exit')
+    try {
+      new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '--help'])).invoke()
+      expect(process.exit.called).to.be.true()
+      expect(process.exit.calledWith(0)).to.be.true()
+      expect(console.error.called).to.be.true()
+      const usage = console.error.getCall(0).args[0]
+      expect(usage).to.includes('--version')
+      expect(usage).to.includes('display the version and runtime environment (or -v if no other flags or arguments)')
+    } finally {
+      console.error.restore()
+      process.exit.restore()
+    }
+  })
 })
 
 describe('Print timings report', () => {
@@ -190,7 +224,7 @@ describe('Print timings report', () => {
     sinon.stub(process, 'exit')
     try {
       const file = path.join(__dirname, 'fixtures', 'sample.adoc')
-      new Invoker(new Options().parse(['node', 'asciidoctor', file, '--timings', '-o', '-'])).invoke()
+      new Invoker(defaultOptions.parse(['node', 'asciidoctor', file, '--timings', '-o', '-'])).invoke()
       expect(process.stderr.write.called).to.be.true()
       expect(process.stderr.write.getCall(0).args[0]).to.equal(`Input file: ${file}`)
       expect(process.stderr.write.getCall(1).args[0]).to.include('Time to read and parse source:')
@@ -326,7 +360,7 @@ describe('Template directory', () => {
     expect(result['template-dir']).to.include('/path/to/others')
   })
   it('should set template_dirs option when --template-dir is defined', () => {
-    const opts = new Options({}).parse('node asciidoctor --template-dir /path/to/templates -b html5 file.adoc')
+    const opts = defaultOptions.parse('node asciidoctor --template-dir /path/to/templates -b html5 file.adoc')
     expect(opts.options.backend).to.equal('html5')
     expect(opts.options.template_dirs).to.have.length(1)
     expect(opts.options.template_dirs).to.include('/path/to/templates')
@@ -351,7 +385,7 @@ describe('Template engine', () => {
     expect(result['template-engine']).to.eq('nunjucks')
   })
   it('should set the template_engine option when the -E argument is defined', () => {
-    const opts = new Options({}).parse('node asciidoctor -E pug -b html5 file.adoc')
+    const opts = defaultOptions.parse('node asciidoctor -E pug -b html5 file.adoc')
     expect(opts.options.backend).to.equal('html5')
     expect(opts.options.template_engine).to.equal('pug')
   })
@@ -380,7 +414,7 @@ describe('Array option', () => {
 
 describe('Options', () => {
   it('should create options', () => {
-    const opts = new Options({}).parse('node asciidoctor -a foo=bar -b html5')
+    const opts = defaultOptions.parse('node asciidoctor -a foo=bar -b html5')
     expect(opts.options.backend).to.equal('html5')
     expect(opts.options.attributes).to.include('foo=bar')
   })
@@ -414,13 +448,13 @@ describe('Options', () => {
 
 describe('Extend', () => {
   it('should not recognize an unknown option', () => {
-    const opts = new Options({}).parse('node asciidoctor -a foo=bar -b html5')
+    const opts = defaultOptions.parse('node asciidoctor -a foo=bar -b html5')
     expect(opts.args.watch).to.be.undefined()
     expect(opts.options.backend).to.equal('html5')
     expect(opts.options.attributes).to.include('foo=bar')
   })
   it('should add option to the command (default value)', () => {
-    const opts = new Options({})
+    const opts = defaultOptions
       .addOption('watch', {
         alias: 'w',
         default: false,
@@ -433,7 +467,7 @@ describe('Extend', () => {
     expect(opts.options.attributes).to.include('foo=bar')
   })
   it('should add option to the command', () => {
-    const opts = new Options({})
+    const opts = defaultOptions
       .addOption('watch', {
         alias: 'w',
         default: false,
@@ -450,7 +484,7 @@ describe('Extend', () => {
 describe('Convert', () => {
   it('should convert using a custom doctype (defined as document attribute)', () => {
     const file = path.join(__dirname, 'fixtures', 'doctype.adoc')
-    const options = new Options().parse(['node', 'asciidoctor', file, '-s'])
+    const options = defaultOptions.parse(['node', 'asciidoctor', file, '-s'])
     const asciidoctor = require('@asciidoctor/core')()
     const asciidoctorOptions = options.options
     Object.assign(asciidoctorOptions, { to_file: false })
@@ -461,7 +495,7 @@ describe('Convert', () => {
   it('should convert using the default backend (html5)', () => {
     const asciidoctor = require('@asciidoctor/core')()
     const file = path.join(__dirname, 'fixtures', 'sample.adoc')
-    const options = new Options().parse(['node', 'asciidoctor', file, '-s'])
+    const options = defaultOptions.parse(['node', 'asciidoctor', file, '-s'])
     const asciidoctorOptions = options.options
     Object.assign(asciidoctorOptions, { to_file: false })
     Invoker.prepareProcessor(argsParser.parse(file), asciidoctor)
