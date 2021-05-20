@@ -9,8 +9,7 @@
   },
   "files": [
     "bin",
-    "lib",
-    "asciidoctor.css"
+    "lib"
   ],
   "bin": {
     "asciidoctor": "bin/asciidoctor",
@@ -19,9 +18,7 @@
   "preferGlobal": true,
   "scripts": {
     "test": "./bin/asciidoctor --version && mocha",
-    "lint": "standard bin/* lib/*.js test/*.js",
-    "prepublishOnly": "node scripts/prepublish.js",
-    "postpublish": "node scripts/postpublish.js"
+    "lint": "standard bin/* lib/*.js test/*.js"
   },
   "repository": {
     "type": "git",
