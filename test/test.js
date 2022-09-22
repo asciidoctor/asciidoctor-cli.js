@@ -2,6 +2,7 @@
 const chai = require('chai')
 const sinon = require('sinon')
 const path = require('path')
+const childProcess = require('child_process')
 const expect = chai.expect
 const dirtyChai = require('dirty-chai')
 chai.use(dirtyChai)
@@ -118,6 +119,10 @@ describe('Read from stdin', () => {
     sinon.stub(stdin, 'read').resolves('An *AsciiDoc* input')
     sinon.stub(processor, 'convert')
     sinon.stub(process, 'exit')
+    sinon.stub(process.stdout, 'end').callsFake(() => {
+      setImmediate(() => process.stdout.emit('close'))
+      return process.stdout
+    })
     try {
       await new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '-'])).invoke()
       expect(stdin.read.called).to.be.true()
@@ -130,17 +135,22 @@ describe('Read from stdin', () => {
       stdin.read.restore()
       processor.convert.restore()
       process.exit.restore()
+      process.stdout.end.restore()
     }
   })
 })
 
 describe('Write to stdout', () => {
-  function itShouldWriteToStdout (args) {
+  async function itShouldWriteToStdout (args) {
     sinon.stub(process.stdout, 'write')
     sinon.stub(process, 'exit')
+    sinon.stub(process.stdout, 'end').callsFake(() => {
+      setImmediate(() => process.stdout.emit('close'))
+      return process.stdout
+    })
     try {
       const file = path.join(__dirname, 'fixtures', 'sample.adoc')
-      new Invoker(new Options().parse(['node', 'asciidoctor', file, ...args])).invoke()
+      await new Invoker(new Options().parse(['node', 'asciidoctor', file, ...args])).invoke()
       expect(process.stdout.write.called).to.be.true()
       const output = process.stdout.write.getCall(0).args[0]
       expect(output).to.includes('<!DOCTYPE html>')
@@ -148,26 +158,53 @@ describe('Write to stdout', () => {
     } finally {
       process.stdout.write.restore()
       process.exit.restore()
+      process.stdout.end.restore()
     }
   }
-  it('should write to stdout with -o -', () => {
-    itShouldWriteToStdout(['-o', '-'])
+
+  it('should write to stdout with -o -', async () => {
+    await itShouldWriteToStdout(['-o', '-'])
   })
-  it('should write to stdout with -o \'\'', () => {
-    itShouldWriteToStdout(['-o', '\'\''])
+  it('should write to stdout with -o \'\'', async () => {
+    await itShouldWriteToStdout(['-o', '\'\''])
   })
-  it('should write to stdout with --out-file -', () => {
-    itShouldWriteToStdout(['--out-file', '-'])
+  it('should write to stdout with --out-file -', async () => {
+    await itShouldWriteToStdout(['--out-file', '-'])
   })
-  it('should write to stdout with --out-file \'\'', () => {
-    itShouldWriteToStdout(['--out-file', '\'\''])
+  it('should write to stdout with --out-file \'\'', async () => {
+    await itShouldWriteToStdout(['--out-file', '\'\''])
+  })
+  it('should write a large output to stdout', async () => {
+    const file = path.join(__dirname, 'fixtures', 'large.adoc')
+    const process = childProcess.spawn(path.join(__dirname, '..', 'bin', 'asciidoctor'), [file, '-o', '-'])
+    let data = ''
+    process.stdout.on('data', (chunk) => {
+      data += chunk
+    })
+    await new Promise((resolve, reject) => {
+      process.on('close', (code) => {
+        expect(data.length).to.gte(496000, 'data is truncated')
+        resolve({})
+      })
+    })
   })
 })
 
 describe('Help', () => {
+  beforeEach(() => {
+    sinon.stub(process, 'exit')
+    sinon.stub(process.stdout, 'end').callsFake(() => {
+      setImmediate(() => process.stdout.emit('close'))
+      return process.stdout
+    })
+  })
+  afterEach(() => {
+    process.exit.restore()
+    process.stdout.end.restore()
+  })
+
   it('should show an overview of the AsciiDoc syntax', () => {
     sinon.stub(console, 'log')
-    sinon.stub(process, 'exit')
     try {
       new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '--help', 'syntax'])).invoke()
       expect(process.exit.called).to.be.true()
@@ -178,13 +215,11 @@ describe('Help', () => {
       expect(asciidocSyntax).to.includes('admonition')
     } finally {
       console.log.restore()
-      process.exit.restore()
     }
   })
 
   it('should show --help option on command usage', () => {
     sinon.stub(console, 'error')
-    sinon.stub(process, 'exit')
     try {
       new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '--help'])).invoke()
       expect(process.exit.called).to.be.true()
@@ -195,13 +230,11 @@ describe('Help', () => {
       expect(usage).to.includes('show an overview of the AsciiDoc syntax if TOPIC is syntax')
     } finally {
       console.error.restore()
-      process.exit.restore()
     }
   })
 
   it('should show --version option on command usage', () => {
     sinon.stub(console, 'error')
-    sinon.stub(process, 'exit')
     try {
       new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '--help'])).invoke()
       expect(process.exit.called).to.be.true()
@@ -212,16 +245,26 @@ describe('Help', () => {
       expect(usage).to.includes('display the version and runtime environment (or -v if no other flags or arguments)')
     } finally {
       console.error.restore()
-      process.exit.restore()
     }
   })
 })
 
 describe('Print timings report', () => {
+  beforeEach(() => {
+    sinon.stub(process, 'exit')
+    sinon.stub(process.stdout, 'end').callsFake(() => {
+      setImmediate(() => process.stdout.emit('close'))
+      return process.stdout
+    })
+  })
+  afterEach(() => {
+    process.exit.restore()
+    process.stdout.end.restore()
+  })
+
   it('should print timings report', () => {
     sinon.stub(process.stdout, 'write')
     sinon.stub(process.stderr, 'write')
-    sinon.stub(process, 'exit')
     try {
       const file = path.join(__dirname, 'fixtures', 'sample.adoc')
       new Invoker(defaultOptions.parse(['node', 'asciidoctor', file, '--timings', '-o', '-'])).invoke()
@@ -233,15 +276,25 @@ describe('Print timings report', () => {
     } finally {
       process.stdout.write.restore()
       process.stderr.write.restore()
-      process.exit.restore()
     }
   })
 })
 
 describe('Version', () => {
+  beforeEach(() => {
+    sinon.stub(process, 'exit')
+    sinon.stub(process.stdout, 'end').callsFake(() => {
+      setImmediate(() => process.stdout.emit('close'))
+      return process.stdout
+    })
+  })
+  afterEach(() => {
+    process.exit.restore()
+    process.stdout.end.restore()
+  })
+
   it('should print version if -v is specified as sole argument', () => {
     sinon.stub(console, 'log')
-    sinon.stub(process, 'exit')
     try {
       new Invoker(defaultOptions.parse(['/path/to/node', '/path/to/asciidoctor', '-v'])).invoke()
       expect(process.exit.called).to.be.true()
@@ -255,13 +308,11 @@ describe('Version', () => {
       expect(version).to.not.include('destination-dir')
     } finally {
       console.log.restore()
-      process.exit.restore()
     }
   })
 
   it('should print a custom version if -v is specified as sole argument', () => {
     sinon.stub(console, 'log')
-    sinon.stub(process, 'exit')
     try {
       class CustomInvoker extends Invoker {
         version () {
@@ -282,37 +333,38 @@ describe('Version', () => {
       expect(version).to.not.include('destination-dir')
     } finally {
       console.log.restore()
-      process.exit.restore()
     }
   })
 })
 
 describe('Process files', () => {
+  beforeEach(() => {
+    sinon.stub(process, 'exit')
+    sinon.stub(process.stdout, 'end').callsFake(() => {
+      setImmediate(() => process.stdout.emit('close'))
+      return process.stdout
+    })
+  })
+  afterEach(() => {
+    process.exit.restore()
+    process.stdout.end.restore()
+  })
+
   // Asciidoctor will log an ERROR when processing book.adoc:
   // asciidoctor: ERROR: book.adoc: line 8: invalid part, must have at least one section (e.g., chapter, appendix, etc.)
   const bookFilePath = path.join(__dirname, 'fixtures', 'book.adoc')
-  it('should exit with code 1 when failure level is lower than the maximum logging level', () => {
-    sinon.stub(process, 'exit')
-    try {
-      Invoker.processFiles([bookFilePath], false, false)
-      Invoker.exit(3) // ERROR: 3
-      expect(process.exit.called).to.be.true()
-      expect(process.exit.calledWith(1)).to.be.true()
-    } finally {
-      process.exit.restore()
-    }
+  it('should exit with code 1 when failure level is lower than the maximum logging level', async () => {
+    Invoker.processFiles([bookFilePath], false, false)
+    await Invoker.exit(3) // ERROR: 3
+    expect(process.exit.called).to.be.true()
+    expect(process.exit.calledWith(1)).to.be.true()
   })
 
-  it('should exit with code 0 when failure level is lower than the maximum logging level', () => {
-    sinon.stub(process, 'exit')
-    try {
-      Invoker.processFiles([bookFilePath], false, false)
-      Invoker.exit(4) // FATAL: 4
-      expect(process.exit.called).to.be.true()
-      expect(process.exit.calledWith(0)).to.be.true()
-    } finally {
-      process.exit.restore()
-    }
+  it('should exit with code 0 when failure level is lower than the maximum logging level', async () => {
+    Invoker.processFiles([bookFilePath], false, false)
+    await Invoker.exit(4) // FATAL: 4
+    expect(process.exit.called).to.be.true()
+    expect(process.exit.calledWith(0)).to.be.true()
   })
 })
 
