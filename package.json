@@ -4,8 +4,8 @@
   "description": "The Command Line Interface (CLI) for Asciidoctor.js",
   "main": "lib/cli.js",
   "engines": {
-    "node": ">=8.11",
-    "npm": ">=5.0.0"
+    "node": ">=16",
+    "npm": ">=8.0.0"
   },
   "files": [
     "bin",
