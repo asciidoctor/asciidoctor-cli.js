@@ -47,18 +47,18 @@
   },
   "homepage": "https://github.com/asciidoctor/asciidoctor-cli.js",
   "dependencies": {
-    "yargs": "17.3.1"
+    "yargs": "18.1.0"
   },
   "devDependencies": {
-    "@asciidoctor/core": "~3.0",
-    "chai": "4.3.7",
-    "dirty-chai": "2.0.1",
-    "mocha": "10.2.0",
-    "sinon": "15.2.0",
-    "standard": "17.1.0"
+    "@asciidoctor/core": "~4.0.0",
+    "chai": "6.2.2",
+    "dirty-chai": "3.0.0",
+    "mocha": "11.8.0",
+    "sinon": "22.1.0",
+    "standard": "17.1.2"
   },
   "peerDependencies": {
-    "@asciidoctor/core": ">=2 <4"
+    "@asciidoctor/core": "<5"
   },
   "standard": {
     "env": [
@@ -66,6 +66,6 @@
     ]
   },
   "volta": {
-    "node": "18.16.1"
+    "node": "24.19.0"
   }
 }
